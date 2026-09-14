@@ -16,3 +16,9 @@ th{
     border: 1px solid black;
     border-color: black;
 }
+button:hover{
+    background-color: lightgray;
+}
+button:focus{
+    border-color: black;
+}
