@@ -19,3 +19,9 @@ button{
     font-family: Arial, serif;
     margin-top: 1%;
 }
+button:hover{
+    background-color: lightgray;
+}
+button:focus{
+    border-color: black;
+}
