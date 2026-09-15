@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Form</title>
 </head>
 <body>
 <link rel="stylesheet" href="formStyle.css">
@@ -17,19 +18,19 @@
     </div>
     <div>
         <label for="isu">ИСУ</label>
-        <input type="number" id="isu" name="isu" minlength="6" maxlength="6" placeholder="338922" required>
+        <input type="number" id="isu" name="isu" minlength="6" maxlength="6" placeholder="338922" min="000001" required>
     </div>
     <div>
         <label for="dorm">Номер общежития</label>
-        <input type="number" id="dorm" name="dorm" placeholder="18">
+        <input type="number" id="dorm" name="dorm" placeholder="18" min="1">
     </div>
     <div>
         <label for="room">Комната</label>
-        <input type="number" id="room" name="room" placeholder="118">
+        <input type="number" id="room" name="room" placeholder="118" min="1">
     </div>
     <div>
         <label for="term">Срок заселения</label>
-        <input type="date" id="term" name="term" max="2030-12-31">
+        <input type="date" id="term" name="term" min="2017-01-01" max="2026-12-31">
     </div>
     <div>
         <label for="international">Является иностранцем?</label>
