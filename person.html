@@ -1,45 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Досье студента</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <title>Person</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="storage.js" defer></script>
+    <script src="person.js" defer></script>
 </head>
 <body>
-<link rel="stylesheet" href="personStyle.css">
-<div>
-    <h3>ФИО</h3>
-    <p id="name">Иванов Иван Иванович</p>
-</div>
-<div>
-    <h3>Номер группы</h3>
-    <p id="group">P3220</p>
-</div>
-<div>
-    <h3>ИСУ</h3>
-    <p id="number">338922</p>
-</div>
-<div>
-    <h3>Номер общежития</h3>
-    <p id="dorm">18</p>
-</div>
-<div>
-    <h3>Номер комнаты</h3>
-    <p id="room">118</p>
-</div>
-<div>
-    <h3>Срок заселения</h3>
-    <p id="date">13-09-2026</p>
-</div>
-<div>
-    <h3>Иностранец</h3>
-    <p id="international">Нет</p>
-</div>
-<div>
-    <h3>Заметки</h3>
-    <p id="notes">Студент второго курса</p>
-</div>
-<button>Редактировать</button>
-<button onclick="location.href='table.html'">Таблица</button>
+    <header class="page-header">
+        <a href="table.html" class="site-title">Учёт студентов</a>
+    </header>
+    <main class="form-page">
+        <h1>Досье студента</h1>
+        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
+
+        <dl id="student-details" class="panel details">
+            <div class="full-width">
+                <dt>ФИО</dt>
+                <dd id="name"></dd>
+            </div>
+            <div>
+                <dt>Группа</dt>
+                <dd id="group"></dd>
+            </div>
+            <div>
+                <dt>ИСУ</dt>
+                <dd id="number"></dd>
+            </div>
+            <div>
+                <dt>Общежитие</dt>
+                <dd id="dorm"></dd>
+            </div>
+            <div>
+                <dt>Комната</dt>
+                <dd id="room"></dd>
+            </div>
+            <div>
+                <dt>Дата заселения</dt>
+                <dd id="date"></dd>
+            </div>
+            <div>
+                <dt>Иностранец</dt>
+                <dd id="international"></dd>
+            </div>
+            <div class="full-width">
+                <dt>Заметки</dt>
+                <dd id="notes"></dd>
+            </div>
+        </dl>
+
+        <div class="actions">
+            <a href="form.html" id="edit-link" class="button primary">Редактировать</a>
+            <a href="table.html" class="button">К таблице</a>
+        </div>
+    </main>
 </body>
 </html>
