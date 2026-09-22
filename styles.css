@@ -70,7 +70,7 @@ table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    border: 0.1rem solid lightgray;
+    border: 0.1rem solid #cccccc;
 }
 .table-scroll{
     width: 100%;
@@ -93,7 +93,7 @@ table {
 }
 
 .table-scroll::-webkit-scrollbar-thumb:hover {
-    background: lightgray;
+    background: #cccccc;
 }
 
 th,
@@ -145,7 +145,7 @@ tbody tr:last-child td {
 }
 
 .message.error {
-    border-color: #b3261e;
+    border-color: #a31f18;
     color: #a31f18;
 }
 
