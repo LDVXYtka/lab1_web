@@ -18,7 +18,7 @@ function loadStudents() {
         if (!Array.isArray(students) || students.some(student =>
             !student || typeof student.isu !== "string" || typeof student.name !== "string"
         )) {
-            throw new Error("Invalid student list");
+            throw new Error("Неверные данные");
         }
         return students;
     } catch (error) {

@@ -1,5 +1,4 @@
-const parameters = new URLSearchParams(window.location.search);
-const isu = parameters.get("isu");
+const isu = new URLSearchParams(window.location.search).get("isu");
 const students = loadStudents();
 const student = students === null ? null : students.find(student => student.isu === isu);
 
@@ -12,7 +11,7 @@ if (student) {
     document.querySelector("#date").textContent = formatDate(student.term);
     document.querySelector("#international").textContent = student.international ? "Да" : "Нет";
     document.querySelector("#notes").textContent = student.note || "Заметок нет.";
-    document.querySelector("#edit-link").href = "form.html?isu=" + encodeURIComponent(student.isu);
+    document.querySelector("#edit-button").href = "form.html?isu=" + encodeURIComponent(student.isu);
     document.title = student.name + " - Досье студента";
 } else {
     document.querySelector("#student-details").hidden = true;

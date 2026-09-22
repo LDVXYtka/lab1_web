@@ -1,12 +1,12 @@
-const studentsBody = document.querySelector("#students-body");
+const tableBody = document.querySelector("#table-body");
 const emptyState = document.querySelector("#empty-state");
 const studentCount = document.querySelector("#student-count");
 const deletePanel = document.querySelector("#delete-panel");
 let isuToDelete = null;
 
 function renderStudents(students) {
-    studentsBody.replaceChildren();
-    studentCount.textContent = students.length;
+    tableBody.replaceChildren();
+    studentCount.textContent = "Всего студентов: " + students.length;
     emptyState.hidden = students.length !== 0;
 
     for (const student of students) {
@@ -21,16 +21,20 @@ function renderStudents(students) {
         }
 
         const actionCell = document.createElement("td");
-        const actions = document.createElement("div");
-        actions.className = "row-actions";
 
-        const detailsLink = document.createElement("a");
-        detailsLink.textContent = "Подробнее";
-        detailsLink.href = "person.html?isu=" + encodeURIComponent(student.isu);
+        const detailsButton = document.createElement("button");
+        detailsButton.type = "button";
+        detailsButton.textContent = "Подробнее";
+        detailsButton.addEventListener("click", function () {
+            window.location.href = "person.html?isu=" + encodeURIComponent(student.isu);
+        });
 
-        const editLink = document.createElement("a");
-        editLink.textContent = "Изменить";
-        editLink.href = "form.html?isu=" + encodeURIComponent(student.isu);
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Изменить";
+        editButton.addEventListener("click", function () {
+            window.location.href = "form.html?isu=" + encodeURIComponent(student.isu);
+        })
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
@@ -44,17 +48,16 @@ function renderStudents(students) {
             document.querySelector("#cancel-delete").focus();
         });
 
-        actions.append(detailsLink, editLink, deleteButton);
-        actionCell.append(actions);
+        actionCell.append(detailsButton, editButton, deleteButton);
         row.append(actionCell);
-        studentsBody.append(row);
+        tableBody.append(row);
     }
 }
 
 document.querySelector("#cancel-delete").addEventListener("click", function () {
     deletePanel.hidden = true;
     isuToDelete = null;
-    document.querySelector("#table-scroll").focus();
+    document.querySelector("#table").focus();
 });
 
 document.querySelector("#confirm-delete").addEventListener("click", function () {
@@ -70,15 +73,9 @@ document.querySelector("#confirm-delete").addEventListener("click", function () 
         renderStudents(remainingStudents);
         deletePanel.hidden = true;
         isuToDelete = null;
-        showMessage("Студент удален.");
-        document.querySelector("#table-scroll").focus();
+        document.querySelector("#table").focus();
     }
 });
 
 const students = loadStudents();
-if (students !== null) {
-    renderStudents(students);
-} else {
-    emptyState.hidden = true;
-    studentCount.textContent = "-";
-}
+renderStudents(students);

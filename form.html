@@ -6,81 +6,64 @@
     <title>Добавление студента</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles.css">
-    <script src="storage.js" defer></script>
-    <script src="form.js" defer></script>
 </head>
 <body>
-    <header class="page-header">
-        <a href="table.html" class="site-title">Учёт студентов</a>
-    </header>
-    <main class="form-page">
+    <header>
         <h1 id="form-title">Добавление студента</h1>
-        <p class="muted">Заполните все поля, кроме заметок. Отчество необязательно.</p>
+        <button onclick="window.location.href='table.html'">Назад к списку</button>
+    </header>
+    <main>
         <p id="message" class="message" role="status" aria-live="polite" hidden></p>
-
-        <form id="student-form" class="panel form-grid" novalidate>
-            <div class="field full-width">
-                <label for="name">ФИО</label>
-                <input type="text" id="name" name="name" placeholder="Иванов Иван Иванович" maxlength="100" autocomplete="name" aria-describedby="name-help name-error" required>
-                <p id="name-help" class="field-help">Не менее двух слов. Русские или латинские буквы, дефисы и апострофы.</p>
-                <p id="name-error" class="field-error" hidden></p>
+        <form id="form">
+            <div class="form-element">
+                <label for="name">ФИО*</label>
+                <input type="text" id="name" name="name" placeholder="Иванов Иван Иванович" required>
+                <p id="name-error" hidden></p>
             </div>
-
-            <div class="field">
-                <label for="group">Группа</label>
-                <input type="text" id="group" name="group" placeholder="P3220" minlength="5" maxlength="5" pattern="[A-Za-z][0-9]{4}" aria-describedby="group-help group-error" required>
-                <p id="group-help" class="field-help">Латинская буква и четыре цифры.</p>
-                <p id="group-error" class="field-error" hidden></p>
+            <div class="form-row">
+                <div class="form-element">
+                    <label for="group">Группа*</label>
+                    <input type="text" id="group" name="group" placeholder="P3220" minlength="5" maxlength="5" pattern="[A-Za-z][0-9]{4}" required>
+                    <p id="group-error" hidden></p>
+                </div>
+                <div class="form-element">
+                    <label for="isu">ИСУ*</label>
+                    <input type="number" id="isu" name="isu" placeholder="338922" minlength="6" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required>
+                    <p id="isu-error" hidden></p>
+                </div>
             </div>
-
-            <div class="field">
-                <label for="isu">ИСУ</label>
-                <input type="text" id="isu" name="isu" placeholder="338922" inputmode="numeric" minlength="6" maxlength="6" pattern="[1-9][0-9]{5}" aria-describedby="isu-help isu-error" required>
-                <p id="isu-help" class="field-help">Шесть цифр, первая не ноль. ИСУ должен быть уникальным.</p>
-                <p id="isu-error" class="field-error" hidden></p>
+            <div class="form-row">
+                <div class="form-element">
+                    <label for="dorm">Номер общежития*</label>
+                    <input type="number" id="dorm" name="dorm" placeholder="1" min="1" max="8" inputmode="numeric" required>
+                    <p id="dorm-error" hidden></p>
+                </div>
+                <div class="form-element">
+                    <label for="room">Комната*</label>
+                    <input type="number" id="room" name="room" placeholder="101" inputmode="numeric" minlength="3" maxlength="4" pattern="(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])" required>
+                    <p id="room-error" hidden></p>
+                </div>
             </div>
-
-            <div class="field">
-                <label for="dorm">Номер общежития</label>
-                <input type="number" id="dorm" name="dorm" placeholder="1" min="1" max="8" step="1" inputmode="numeric" aria-describedby="dorm-help dorm-error" required>
-                <p id="dorm-help" class="field-help">Целое число от 1 до 8.</p>
-                <p id="dorm-error" class="field-error" hidden></p>
-            </div>
-
-            <div class="field">
-                <label for="room">Комната</label>
-                <input type="text" id="room" name="room" placeholder="101" inputmode="numeric" minlength="3" maxlength="4" pattern="(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])" aria-describedby="room-help room-error" required>
-                <p id="room-help" class="field-help">Этаж от 1 до 20, последние две цифры от 01 до 99. Например, 101 или 2001.</p>
-                <p id="room-error" class="field-error" hidden></p>
-            </div>
-
-            <div class="field">
-                <label for="term">Дата заселения</label>
-                <input type="date" id="term" name="term" min="1970-01-01" max="2026-12-31" aria-describedby="term-help term-error" required>
-                <p id="term-help" class="field-help">С 01.01.1970 до конца текущего года.</p>
-                <p id="term-error" class="field-error" hidden></p>
-            </div>
-
-            <div class="field checkbox-field">
-                <label class="checkbox-label" for="international">
+            <div class="form-row">
+                <div class="form-element">
+                    <label for="term">Дата заселения*</label>
+                    <input type="date" id="term" name="term" min="1970-01-01" max="2026-12-31" required>
+                    <p id="term-error" hidden></p>
+                </div>
+                <div class="form-element">
+                    <label for="international">Иностранец*</label>
                     <input type="checkbox" id="international" name="international">
-                    Иностранец
-                </label>
-                <p class="field-help">Если галочка не установлена, сохраняется ответ "Нет".</p>
+                </div>
             </div>
-
-            <div class="field full-width">
+            <div class="form-element">
                 <label for="note">Заметки</label>
-                <textarea id="note" name="note" rows="5" maxlength="2000" aria-describedby="note-help note-error"></textarea>
-                <p id="note-help" class="field-help">Необязательно, до 2000 символов.</p>
-                <p id="note-error" class="field-error" hidden></p>
+                <textarea id="note" name="note" rows="5" maxlength="2000"></textarea>
+                <p id="note-error" hidden></p>
             </div>
-
-            <div class="actions full-width">
-                <button type="submit" id="save-button" class="primary">Сохранить</button>
-                <a href="table.html" class="button">Отмена</a>
-            </div>
+                <button type="submit" id="save-button">Сохранить</button>
         </form>
     </main>
+    <script src="storage.js" ></script>
+    <script src="form.js"></script>
 </body>
 </html>

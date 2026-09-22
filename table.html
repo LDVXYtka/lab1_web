@@ -6,50 +6,45 @@
     <title>Студенты</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles.css">
-    <script src="storage.js" defer></script>
-    <script src="table.js" defer></script>
 </head>
 <body>
-    <header class="page-header">
-        <a href="table.html" class="site-title">Учёт студентов</a>
+    <header>
+        <h1>Cтуденты</h1>
     </header>
     <main>
-        <div class="page-heading">
+        <div class="info-panel">
             <div>
-                <h1>Студенты</h1>
-                <p class="muted">Всего студентов: <span id="student-count">0</span></p>
+                <p id="student-count">Всего студентов: 0</p>
             </div>
-            <a href="form.html" class="button primary">Добавить студента</a>
+            <button onclick="window.location.href='form.html'">Добавить студента</button>
         </div>
-
-        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
-
-        <section id="delete-panel" class="panel delete-panel" aria-labelledby="delete-question" hidden>
+        <section id="delete-panel" hidden>
             <p id="delete-question"></p>
             <div class="actions">
                 <button id="confirm-delete" type="button" class="primary">Удалить</button>
                 <button id="cancel-delete" type="button">Отмена</button>
             </div>
         </section>
-
-        <div id="table-scroll" class="table-scroll" tabindex="0" role="region" aria-label="Таблица студентов с прокруткой">
+        <div id="table" class="table-scroll">
             <table>
                 <thead>
                     <tr>
-                        <th scope="col">ФИО</th>
-                        <th scope="col">Группа</th>
-                        <th scope="col">ИСУ</th>
-                        <th scope="col">Общежитие</th>
-                        <th scope="col">Комната</th>
-                        <th scope="col">Дата заселения</th>
-                        <th scope="col">Иностранец</th>
-                        <th scope="col">Действия</th>
+                        <th>ФИО</th>
+                        <th>Группа</th>
+                        <th>ИСУ</th>
+                        <th>Общежитие</th>
+                        <th>Комната</th>
+                        <th>Дата заселения</th>
+                        <th>Иностранец</th>
+                        <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody id="students-body"></tbody>
+                <tbody id="table-body"></tbody>
             </table>
         </div>
-        <p id="empty-state" class="empty-state">Студентов пока нет. Добавьте первую запись.</p>
+        <p id="empty-state">Студентов пока нет. Добавьте первую запись.</p>
     </main>
+    <script src="storage.js"></script>
+    <script src="table.js"></script>
 </body>
 </html>

@@ -1,12 +1,11 @@
-const form = document.querySelector("#student-form");
+const form = document.querySelector("#form");
 const fieldNames = ["name", "group", "isu", "dorm", "room", "term", "note"];
 const fields = {};
 for (const name of fieldNames) {
     fields[name] = document.querySelector("#" + name);
 }
 
-const parameters = new URLSearchParams(window.location.search);
-const editingIsu = parameters.get("isu");
+const editingIsu = new URLSearchParams(window.location.search).get("isu");
 const lastDate = new Date().getFullYear() + "-12-31";
 fields.term.max = lastDate;
 let submitted = false;
@@ -20,13 +19,6 @@ function getFieldError(name) {
     const field = fields[name];
     const value = field.value;
 
-    if (field.validity.badInput) {
-        return "Введите целое число.";
-    }
-    if (field.validity.valueMissing) {
-        return "Заполните это поле.";
-    }
-
     if (name === "name") {
         const normalized = normalizeName(value);
         const namePattern = /^[A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*(?: [A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*)+$/;
@@ -38,13 +30,16 @@ function getFieldError(name) {
         }
     }
 
-    if (name === "group" && !/^[A-Z][0-9]{4}$/.test(value)) {
+    if (name === "group" && !/^[A-Z][0-9][1-4][0-9]{2}$/.test(value)) {
         return "Укажите латинскую букву и четыре цифры, например P3220.";
     }
 
     if (name === "isu") {
-        if (!/^[1-9][0-9]{5}$/.test(value)) {
-            return "ИСУ должен состоять из шести цифр и не начинаться с нуля.";
+        if (!/^[0-9]{6}$/.test(value)) {
+            return "ИСУ должен состоять из шести цифр";
+        }
+        if (value === "000000") {
+            return "ИСУ должен быть больше нуля";
         }
         if (editingIsu !== null && value !== editingIsu) {
             return "ИСУ нельзя изменять при редактировании.";
@@ -59,7 +54,7 @@ function getFieldError(name) {
     }
 
     if (name === "room" && !/^(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])$/.test(value)) {
-        return "Укажите этаж от 1 до 20 и две цифры комнаты от 01 до 99. Например: 101, 1001, 2001. Комнаты 00 нет.";
+        return "Укажите этаж от 1 до 20 и две цифры комнаты от 01 до 99.";
     }
 
     if (name === "term") {
@@ -72,9 +67,6 @@ function getFieldError(name) {
         return "Заметки должны содержать не больше 2000 символов.";
     }
 
-    if (!field.validity.valid) {
-        return "Проверьте формат и допустимое значение поля.";
-    }
     return "";
 }
 
@@ -83,7 +75,6 @@ function checkField(name) {
     const errorElement = document.querySelector("#" + name + "-error");
     errorElement.textContent = error;
     errorElement.hidden = error === "";
-    fields[name].setAttribute("aria-invalid", error === "" ? "false" : "true");
     return error === "";
 }
 
@@ -93,7 +84,6 @@ function fillForm(student) {
     }
     document.querySelector("#international").checked = student.international;
     fields.isu.readOnly = true;
-    document.querySelector("#isu-help").textContent = "ИСУ является идентификатором студента и не изменяется.";
     document.querySelector("#form-title").textContent = "Редактирование студента";
     document.querySelector("#save-button").textContent = "Сохранить изменения";
     document.title = "Редактирование студента";
@@ -111,20 +101,10 @@ if (students === null) {
     }
 }
 
-fields.name.addEventListener("blur", function () {
-    fields.name.value = normalizeName(fields.name.value);
-    if (submitted) {
-        checkField("name");
-    }
-});
-
 for (const name of fieldNames) {
     fields[name].addEventListener("input", function () {
         if (name === "group") {
             fields.group.value = fields.group.value.toUpperCase();
-        }
-        if (submitted && students !== null) {
-            checkField(name);
         }
     });
 }
@@ -132,7 +112,6 @@ for (const name of fieldNames) {
 form.addEventListener("submit", function (event) {
     event.preventDefault();
     submitted = true;
-    showMessage("");
     students = loadStudents();
     if (students === null) {
         return;

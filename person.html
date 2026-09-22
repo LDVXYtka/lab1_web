@@ -6,19 +6,17 @@
     <title>Досье студента</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles.css">
-    <script src="storage.js" defer></script>
-    <script src="person.js" defer></script>
 </head>
 <body>
-    <header class="page-header">
-        <a href="table.html" class="site-title">Учёт студентов</a>
+    <header>
+        <h1>Добавление студента</h1>
+        <button onclick="window.location.href='table.html'">Назад к списку</button>
     </header>
-    <main class="form-page">
-        <h1>Досье студента</h1>
-        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
+    <main>
+        <p id="message" role="status" aria-live="polite" hidden></p>
 
-        <dl id="student-details" class="panel details">
-            <div class="full-width">
+        <dl id="student-details">
+            <div class="wide">
                 <dt>ФИО</dt>
                 <dd id="name"></dd>
             </div>
@@ -46,16 +44,14 @@
                 <dt>Иностранец</dt>
                 <dd id="international"></dd>
             </div>
-            <div class="full-width">
+            <div>
                 <dt>Заметки</dt>
                 <dd id="notes"></dd>
             </div>
         </dl>
-
-        <div class="actions">
-            <a href="form.html" id="edit-link" class="button primary">Редактировать</a>
-            <a href="table.html" class="button">К таблице</a>
-        </div>
+        <button id="edit-button">Редактировать</button>
     </main>
+    <script src="storage.js"></script>
+    <script src="person.js"></script>
 </body>
 </html>
