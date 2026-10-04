@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "name": "Иванов Иван Иванович",
+    "group": "M3301",
+    "isu": "412345",
+    "dormitory": 8,
+    "room": "1203",
+    "term": "2025-09-01",
+    "international": false,
+    "note": "Староста этажа"
+  },
+  {
+    "id": 2,
+    "name": "Петрова Анна Сергеевна",
+    "group": "P3220",
+    "isu": "338922",
+    "dormitory": 2,
+    "room": "305",
+    "term": "2024-09-01",
+    "international": false,
+    "note": ""
+  },
+  {
+    "id": 3,
+    "name": "Ли Вэй",
+    "group": "M3301",
+    "isu": "401122",
+    "dormitory": 8,
+    "room": "1205",
+    "term": "2025-09-01",
+    "international": true,
+    "note": "Изучает русский язык"
+  },
+  {
+    "id": 4,
+    "name": "Нгуен Ван Ань",
+    "group": "K3201",
+    "isu": "402233",
+    "dormitory": 8,
+    "room": "1410",
+    "term": "2025-02-10",
+    "international": true,
+    "note": ""
+  },
+  {
+    "id": 5,
+    "name": "Сидоров Алексей Петрович",
+    "group": "M3302",
+    "isu": "345678",
+    "dormitory": 5,
+    "room": "212",
+    "term": "2023-09-01",
+    "international": false,
+    "note": "Попросил переселить на другой этаж"
+  },
+  {
+    "id": 6,
+    "name": "Козлова Мария Андреевна",
+    "group": "P3221",
+    "isu": "356789",
+    "dormitory": 2,
+    "room": "507",
+    "term": "2025-08-28",
+    "international": false,
+    "note": ""
+  },
+  {
+    "id": 7,
+    "name": "Ахмедов Тимур Русланович",
+    "group": "M3301",
+    "isu": "405566",
+    "dormitory": 8,
+    "room": "1502",
+    "term": "2025-08-30",
+    "international": true,
+    "note": ""
+  },
+  {
+    "id": 8,
+    "name": "Smith John",
+    "group": "K3202",
+    "isu": "403344",
+    "dormitory": 3,
+    "room": "907",
+    "term": "2024-12-20",
+    "international": true,
+    "note": "Учится по обмену до лета"
+  },
+  {
+    "id": 9,
+    "name": "Волкова Дарья Олеговна",
+    "group": "M4101",
+    "isu": "367890",
+    "dormitory": 1,
+    "room": "110",
+    "term": "2026-09-01",
+    "international": false,
+    "note": "Магистрант первого курса"
+  },
+  {
+    "id": 10,
+    "name": "Морозов Кирилл Денисович",
+    "group": "P3220",
+    "isu": "378901",
+    "dormitory": 5,
+    "room": "1803",
+    "term": "2026-02-15",
+    "international": false,
+    "note": ""
+  }
+]
