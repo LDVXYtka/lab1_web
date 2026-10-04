@@ -32,6 +32,7 @@ h1 {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin: 2vh auto;
 }
 
@@ -45,8 +46,11 @@ main {
     align-items: center;
 }
 
-button{
+button,
+.button {
     display: inline-block;
+    font-family: inherit;
+    font-size: 0.9rem;
     padding: 1vh 1vw;
     border: 0.1rem solid #aaa;
     border-radius: 0.3rem;
@@ -57,7 +61,8 @@ button{
     cursor: pointer;
 }
 
-button:hover {
+button:hover,
+.button:hover {
     background: #e8e8e8;
 }
 
@@ -183,6 +188,7 @@ label {
 }
 
 input:not([type="checkbox"]),
+select,
 textarea {
     display: block;
     width: 100%;
@@ -192,11 +198,6 @@ textarea {
     border-radius: 0.2rem;
     background: #fff;
     color: #252525;
-}
-
-input[readonly] {
-    background: #ededed;
-    color: #555;
 }
 
 textarea {
@@ -209,6 +210,27 @@ input[type="checkbox"] {
     height: 1.2rem;
     margin: 0;
     accent-color: #444;
+}
+
+.field-error {
+    margin: 0.3rem 0 0;
+    color: #a31f18;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.filter-buttons {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.5rem;
+}
+
+#message {
+    width: 100%;
 }
 
 dl {
@@ -238,6 +260,14 @@ dd {
 }
 
 
+@media (max-width: 900px) {
+
+    .filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
 @media (max-width: 600px) {
 
     main {
@@ -256,6 +286,10 @@ dd {
 
     .form-row {
         flex-wrap: wrap;
+    }
+
+    .filters {
+        grid-template-columns: minmax(0, 1fr);
     }
 
 }

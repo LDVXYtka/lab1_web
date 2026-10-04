@@ -2,16 +2,42 @@ const tableBody = document.querySelector("#table-body");
 const emptyState = document.querySelector("#empty-state");
 const studentCount = document.querySelector("#student-count");
 const deletePanel = document.querySelector("#delete-panel");
-let isuToDelete = null;
+const filtersForm = document.querySelector("#filters");
+let idToDelete = null;
 
-function renderStudents(students) {
+function getFiltersFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const filters = {};
+    for (const [key, value] of params) {
+        if (value.trim() !== "") {
+            filters[key] = value.trim();
+        }
+    }
+    return filters;
+}
+
+function fillFiltersForm(filters) {
+    for (const key in filters) {
+        const field = filtersForm.elements[key];
+        if (field) {
+            field.value = filters[key];
+        }
+    }
+}
+
+function renderStudents(students, hasFilters) {
     tableBody.replaceChildren();
-    studentCount.textContent = "Всего студентов: " + students.length;
+    studentCount.textContent = "Студентов: " + students.length;
     emptyState.hidden = students.length !== 0;
+    if (hasFilters) {
+        emptyState.textContent = "По этим фильтрам никого не нашлось.";
+    } else {
+        emptyState.textContent = "Студентов пока нет. Добавьте первую запись.";
+    }
 
     for (const student of students) {
         const row = document.createElement("tr");
-        const values = [student.name, student.group, student.isu, student.dorm,
+        const values = [student.name, student.group, student.isu, student.dormitory,
             student.room, formatDate(student.term), student.international ? "Да" : "Нет"];
 
         for (const value of values) {
@@ -22,25 +48,21 @@ function renderStudents(students) {
 
         const actionCell = document.createElement("td");
 
-        const detailsButton = document.createElement("button");
-        detailsButton.type = "button";
-        detailsButton.textContent = "Подробнее";
-        detailsButton.addEventListener("click", function () {
-            window.location.href = "person.html?isu=" + encodeURIComponent(student.isu);
-        });
+        const detailsLink = document.createElement("a");
+        detailsLink.className = "button";
+        detailsLink.textContent = "Подробнее";
+        detailsLink.href = "person.html?id=" + student.id;
 
-        const editButton = document.createElement("button");
-        editButton.type = "button";
-        editButton.textContent = "Изменить";
-        editButton.addEventListener("click", function () {
-            window.location.href = "form.html?isu=" + encodeURIComponent(student.isu);
-        })
+        const editLink = document.createElement("a");
+        editLink.className = "button";
+        editLink.textContent = "Изменить";
+        editLink.href = "form.html?id=" + student.id;
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.textContent = "Удалить";
         deleteButton.addEventListener("click", function () {
-            isuToDelete = student.isu;
+            idToDelete = student.id;
             showMessage("");
             document.querySelector("#delete-question").textContent =
                 "Удалить студента " + student.name + " (ИСУ " + student.isu + ")?";
@@ -48,34 +70,41 @@ function renderStudents(students) {
             document.querySelector("#cancel-delete").focus();
         });
 
-        actionCell.append(detailsButton, editButton, deleteButton);
+        actionCell.append(detailsLink, editLink, deleteButton);
         row.append(actionCell);
         tableBody.append(row);
     }
 }
 
+async function loadStudents() {
+    const filters = getFiltersFromUrl();
+    try {
+        const students = await getStudents(filters);
+        renderStudents(students, Object.keys(filters).length > 0);
+    } catch (error) {
+        showMessage(error.message, true);
+    }
+}
+
 document.querySelector("#cancel-delete").addEventListener("click", function () {
     deletePanel.hidden = true;
-    isuToDelete = null;
-    document.querySelector("#table").focus();
+    idToDelete = null;
 });
 
-document.querySelector("#confirm-delete").addEventListener("click", function () {
-    if (isuToDelete === null) {
+document.querySelector("#confirm-delete").addEventListener("click", async function () {
+    if (idToDelete === null) {
         return;
     }
-    const students = loadStudents();
-    if (students === null) {
-        return;
+    try {
+        await deleteStudent(idToDelete);
+        showMessage("Студент удалён.");
+    } catch (error) {
+        showMessage(error.message, true);
     }
-    const remainingStudents = students.filter(student => student.isu !== isuToDelete);
-    if (saveStudents(remainingStudents)) {
-        renderStudents(remainingStudents);
-        deletePanel.hidden = true;
-        isuToDelete = null;
-        document.querySelector("#table").focus();
-    }
+    deletePanel.hidden = true;
+    idToDelete = null;
+    loadStudents();
 });
 
-const students = loadStudents();
-renderStudents(students);
+fillFiltersForm(getFiltersFromUrl());
+loadStudents();

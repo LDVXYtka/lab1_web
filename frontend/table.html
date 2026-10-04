@@ -9,14 +9,65 @@
 </head>
 <body>
     <header>
-        <h1>Cтуденты</h1>
+        <h1>Студенты</h1>
     </header>
     <main>
-        <div class="info-panel">
-            <div>
-                <p id="student-count">Всего студентов: 0</p>
+        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
+        <form id="filters" class="filters" method="get" action="table.html">
+            <div class="form-element">
+                <label for="filter-name">ФИО</label>
+                <input type="text" id="filter-name" name="name" placeholder="Часть ФИО">
             </div>
-            <button onclick="window.location.href='form.html'">Добавить студента</button>
+            <div class="form-element">
+                <label for="filter-group">Группа</label>
+                <input type="text" id="filter-group" name="group" placeholder="M3301" maxlength="5">
+            </div>
+            <div class="form-element">
+                <label for="filter-isu">ИСУ</label>
+                <input type="text" id="filter-isu" name="isu" placeholder="412345" inputmode="numeric" maxlength="6">
+            </div>
+            <div class="form-element">
+                <label for="filter-dormitory">Общежитие</label>
+                <select id="filter-dormitory" name="dormitory">
+                    <option value="">Любое</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                </select>
+            </div>
+            <div class="form-element">
+                <label for="filter-room">Комната</label>
+                <input type="text" id="filter-room" name="room" placeholder="1203" inputmode="numeric" maxlength="4">
+            </div>
+            <div class="form-element">
+                <label for="filter-term-from">Заселён с</label>
+                <input type="date" id="filter-term-from" name="term_from">
+            </div>
+            <div class="form-element">
+                <label for="filter-term-to">Заселён по</label>
+                <input type="date" id="filter-term-to" name="term_to">
+            </div>
+            <div class="form-element">
+                <label for="filter-international">Иностранец</label>
+                <select id="filter-international" name="international">
+                    <option value="">Все</option>
+                    <option value="true">Да</option>
+                    <option value="false">Нет</option>
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button type="submit">Найти</button>
+                <a class="button" href="table.html">Сбросить</a>
+            </div>
+        </form>
+        <div class="info-panel">
+            <p id="student-count">Студентов: 0</p>
+            <a class="button" href="form.html">Добавить студента</a>
         </div>
         <section id="delete-panel" hidden>
             <p id="delete-question"></p>
@@ -42,9 +93,9 @@
                 <tbody id="table-body"></tbody>
             </table>
         </div>
-        <p id="empty-state">Студентов пока нет. Добавьте первую запись.</p>
+        <p id="empty-state" hidden></p>
     </main>
-    <script src="storage.js"></script>
+    <script src="api.js"></script>
     <script src="table.js"></script>
 </body>
 </html>

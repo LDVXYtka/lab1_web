@@ -9,11 +9,11 @@
 </head>
 <body>
     <header>
-        <h1>Добавление студента</h1>
-        <button onclick="window.location.href='table.html'">Назад к списку</button>
+        <h1>Досье студента</h1>
+        <a class="button" href="table.html">Назад к списку</a>
     </header>
     <main>
-        <p id="message" role="status" aria-live="polite" hidden></p>
+        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
 
         <dl id="student-details">
             <div class="wide">
@@ -26,11 +26,11 @@
             </div>
             <div>
                 <dt>ИСУ</dt>
-                <dd id="number"></dd>
+                <dd id="isu"></dd>
             </div>
             <div>
                 <dt>Общежитие</dt>
-                <dd id="dorm"></dd>
+                <dd id="dormitory"></dd>
             </div>
             <div>
                 <dt>Комната</dt>
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <dt>Дата заселения</dt>
-                <dd id="date"></dd>
+                <dd id="term"></dd>
             </div>
             <div>
                 <dt>Иностранец</dt>
@@ -46,12 +46,12 @@
             </div>
             <div>
                 <dt>Заметки</dt>
-                <dd id="notes"></dd>
+                <dd id="note"></dd>
             </div>
         </dl>
-        <button id="edit-button">Редактировать</button>
+        <a id="edit-link" class="button" href="form.html">Редактировать</a>
     </main>
-    <script src="storage.js"></script>
+    <script src="api.js"></script>
     <script src="person.js"></script>
 </body>
 </html>

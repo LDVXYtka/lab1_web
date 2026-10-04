@@ -1,55 +1,41 @@
 const form = document.querySelector("#form");
-const fieldNames = ["name", "group", "isu", "dorm", "room", "term", "note"];
+const fieldNames = ["name", "group", "isu", "dormitory", "room", "term", "note"];
 const fields = {};
 for (const name of fieldNames) {
     fields[name] = document.querySelector("#" + name);
 }
+const international = document.querySelector("#international");
 
-const editingIsu = new URLSearchParams(window.location.search).get("isu");
+const editingId = new URLSearchParams(window.location.search).get("id");
 const lastDate = new Date().getFullYear() + "-12-31";
 fields.term.max = lastDate;
-let submitted = false;
-let students = loadStudents();
 
 function normalizeName(name) {
     return name.trim().replace(/\s+/g, " ");
 }
 
 function getFieldError(name) {
-    const field = fields[name];
-    const value = field.value;
+    const value = fields[name].value;
 
     if (name === "name") {
-        const normalized = normalizeName(value);
         const namePattern = /^[A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*(?: [A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*)+$/;
-        if (normalized.length > 100) {
+        if (value.length > 100) {
             return "ФИО должно содержать не больше 100 символов.";
         }
-        if (!namePattern.test(normalized)) {
+        if (!namePattern.test(value)) {
             return "Введите минимум два слова: фамилию и имя. Допустимы русские и латинские буквы, дефисы и апострофы внутри слов.";
         }
     }
 
-    if (name === "group" && !/^[A-Z][0-9][1-4][0-9]{2}$/.test(value)) {
-        return "Укажите латинскую букву и четыре цифры, например P3220.";
+    if (name === "group" && !/^[A-Z][34][1-4][0-9]{2}$/.test(value)) {
+        return "Укажите латинскую букву, затем 3 или 4 и ещё три цифры, например M3301.";
     }
 
-    if (name === "isu") {
-        if (!/^[0-9]{6}$/.test(value)) {
-            return "ИСУ должен состоять из шести цифр";
-        }
-        if (value === "000000") {
-            return "ИСУ должен быть больше нуля";
-        }
-        if (editingIsu !== null && value !== editingIsu) {
-            return "ИСУ нельзя изменять при редактировании.";
-        }
-        if (students.some(student => student.isu === value && student.isu !== editingIsu)) {
-            return "Студент с таким ИСУ уже существует.";
-        }
+    if (name === "isu" && !/^[1-9][0-9]{5}$/.test(value)) {
+        return "ИСУ должен состоять из шести цифр, первая цифра не 0.";
     }
 
-    if (name === "dorm" && !/^[1-8]$/.test(value)) {
+    if (name === "dormitory" && !/^[1-8]$/.test(value)) {
         return "Введите целый номер общежития от 1 до 8.";
     }
 
@@ -70,11 +56,15 @@ function getFieldError(name) {
     return "";
 }
 
+function showFieldError(name, text) {
+    const errorElement = document.querySelector("#" + name + "-error");
+    errorElement.textContent = text;
+    errorElement.hidden = text === "";
+}
+
 function checkField(name) {
     const error = getFieldError(name);
-    const errorElement = document.querySelector("#" + name + "-error");
-    errorElement.textContent = error;
-    errorElement.hidden = error === "";
+    showFieldError(name, error);
     return error === "";
 }
 
@@ -82,40 +72,37 @@ function fillForm(student) {
     for (const name of fieldNames) {
         fields[name].value = student[name];
     }
-    document.querySelector("#international").checked = student.international;
-    fields.isu.readOnly = true;
+    international.checked = student.international;
     document.querySelector("#form-title").textContent = "Редактирование студента";
     document.querySelector("#save-button").textContent = "Сохранить изменения";
     document.title = "Редактирование студента";
 }
 
-if (students === null) {
-    form.hidden = true;
-} else if (editingIsu !== null) {
-    const student = students.find(student => student.isu === editingIsu);
-    if (student) {
+async function loadStudent() {
+    try {
+        const student = await getStudent(editingId);
         fillForm(student);
-    } else {
+    } catch (error) {
         form.hidden = true;
-        showMessage("Студент не найден. Вернитесь к списку студентов.", true);
-    }
-}
-
-for (const name of fieldNames) {
-    fields[name].addEventListener("input", function () {
-        if (name === "group") {
-            fields.group.value = fields.group.value.toUpperCase();
+        if (error.status === 404) {
+            showMessage("Студент не найден. Вернитесь к списку студентов.", true);
+        } else {
+            showMessage(error.message, true);
         }
-    });
+    }
 }
 
-form.addEventListener("submit", function (event) {
+if (editingId !== null) {
+    loadStudent();
+}
+
+fields.group.addEventListener("input", function () {
+    fields.group.value = fields.group.value.toUpperCase();
+});
+
+form.addEventListener("submit", async function (event) {
     event.preventDefault();
-    submitted = true;
-    students = loadStudents();
-    if (students === null) {
-        return;
-    }
+    showMessage("");
 
     fields.name.value = normalizeName(fields.name.value);
     fields.group.value = fields.group.value.trim().toUpperCase();
@@ -137,25 +124,26 @@ form.addEventListener("submit", function (event) {
         name: fields.name.value,
         group: fields.group.value,
         isu: fields.isu.value,
-        dorm: Number(fields.dorm.value),
+        dormitory: Number(fields.dormitory.value),
         room: fields.room.value,
         term: fields.term.value,
-        international: document.querySelector("#international").checked,
+        international: international.checked,
         note: fields.note.value
     };
 
-    if (editingIsu === null) {
-        students.push(student);
-    } else {
-        const index = students.findIndex(student => student.isu === editingIsu);
-        if (index === -1) {
-            showMessage("Студент уже удален. Вернитесь к списку студентов.", true);
-            return;
+    try {
+        if (editingId === null) {
+            await createStudent(student);
+        } else {
+            await updateStudent(editingId, student);
         }
-        students[index] = student;
-    }
-
-    if (saveStudents(students)) {
         window.location.href = "table.html";
+    } catch (error) {
+        showMessage(error.message, true);
+        for (const name in error.fields) {
+            if (fieldNames.includes(name)) {
+                showFieldError(name, error.fields[name]);
+            }
+        }
     }
 });
