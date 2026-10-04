@@ -58,7 +58,7 @@ function renderStudents(students) {
             idToDelete = student.id;
             showMessage("");
             document.querySelector("#delete-question").textContent =
-                "Удалить студента " + student.name + " (ИСУ " + student.isu + ")?";
+                "Точно удалить " + student.name + " (ИСУ " + student.isu + ")?";
             deletePanel.hidden = false;
             document.querySelector("#cancel-delete").focus();
         });
@@ -89,7 +89,7 @@ document.querySelector("#confirm-delete").addEventListener("click", async functi
     }
     try {
         await deleteStudent(idToDelete);
-        showMessage("Студент удален.");
+        showMessage("Студент удален");
     } catch (error) {
         showMessage(error.message, true);
     }

@@ -36,41 +36,39 @@ def is_date(value: str) -> bool:
 
 def check_field(field: str, value) -> str:
     if field == "dormitory":
-        if type(value) is not int:
-            return "Номер общежития должен быть числом"
-        if value < 1 or value > 8:
-            return "Номер общежития от 1 до 8"
+        if type(value) is not int or value < 1 or value > 8:
+            return "Общежитие: целое число от 1 до 8"
         return ""
 
     if field == "international":
         if type(value) is not bool:
-            return "Нужно значение true или false"
+            return "Иностранец: только true или false"
         return ""
 
     if type(value) is not str:
-        return "Значение должно быть строкой"
+        return "Должна быть строка"
 
     if field == "name":
         if len(value) > 100:
-            return "ФИО должно быть не длиннее 100 символов"
+            return "Слишком длинное ФИО, максимум 100 символов"
         if not re.fullmatch(NAME_PATTERN, value):
-            return "Введите минимум фамилию и имя: только буквы, дефис и апостроф внутри слов"
+            return "Нужны фамилия и имя через пробел, только буквы (дефис и апостроф можно внутри слова)"
     elif field == "group":
         if not re.fullmatch(GROUP_PATTERN, value):
-            return "Группа: латинская заглавная буква, потом 3 или 4 и еще три цифры, например M3301"
+            return "Группа как M3301: большая латинская буква, потом 3 или 4, потом цифра от 1 до 4 и еще две цифры"
     elif field == "isu":
         if not re.fullmatch(ISU_PATTERN, value):
-            return "ИСУ должен состоять из 6 цифр, первая не 0"
+            return "ИСУ: 6 цифр, первая не 0"
     elif field == "room":
         if not re.fullmatch(ROOM_PATTERN, value):
-            return "Комната: этаж от 1 до 20 и номер от 01 до 99, например 1203"
+            return "Комната как 1203: этаж от 1 до 20 и номер от 01 до 99"
     elif field == "term":
         last_date = str(date.today().year) + "-12-31"
         if not is_date(value) or value < "1970-01-01" or value > last_date:
-            return "Дата заселения от 1970-01-01 до " + last_date
+            return "Дата от 01.01.1970 до 31.12." + str(date.today().year)
     elif field == "note":
         if len(value) > 2000:
-            return "Заметки не длиннее 2000 символов"
+            return "Слишком длинные заметки, максимум 2000 символов"
     return ""
 
 
@@ -82,33 +80,33 @@ def validate_student(data: dict, for_update: bool = False):
             if error != "":
                 errors[field] = error
         elif not for_update and field != "note":
-            errors[field] = "Обязательное поле"
+            errors[field] = "Не заполнено"
     if errors:
-        raise ApiError(422, "Проверьте поля формы", errors)
+        raise ApiError(422, "Ошибки в полях", errors)
 
 
 def check_isu_is_free(isu: str):
     for student in repository.get_all():
         if student["isu"] == isu:
-            raise ApiError(409, "Студент с таким ИСУ уже есть", {"isu": "Этот ИСУ уже занят другим студентом"})
+            raise ApiError(409, "Студент с таким ИСУ уже есть", {"isu": "ИСУ уже занят"})
 
 
 def check_filters(filters: dict) -> dict:
     result = {}
     for key, value in filters.items():
         if key not in FILTERS:
-            raise ApiError(400, "Неизвестный фильтр: " + key)
+            raise ApiError(400, "Нет такого фильтра: " + key)
         if type(value) is not str:
-            raise ApiError(400, "Значение фильтра " + key + " должно быть строкой")
+            raise ApiError(400, "Фильтр " + key + " должен быть строкой")
         value = value.strip()
         if value == "":
             continue
         if key == "dormitory" and not re.fullmatch(r"[1-8]", value):
-            raise ApiError(400, "Фильтр dormitory должен быть числом от 1 до 8")
+            raise ApiError(400, "Фильтр dormitory: число от 1 до 8")
         if key == "international" and value not in ("true", "false"):
-            raise ApiError(400, "Фильтр international должен быть true или false")
+            raise ApiError(400, "Фильтр international: true или false")
         if key in ("term_from", "term_to") and not is_date(value):
-            raise ApiError(400, "Фильтр " + key + " должен быть датой в формате ГГГГ-ММ-ДД")
+            raise ApiError(400, "Фильтр " + key + ": дата в виде ГГГГ-ММ-ДД")
         result[key] = value
     return result
 
@@ -145,7 +143,7 @@ def get_students(filters: dict) -> list:
 def get_student(student_id: int) -> dict:
     student = repository.get_by_id(student_id)
     if student is None:
-        raise ApiError(404, "Студент не найден")
+        raise ApiError(404, "Такого студента нет")
     return student
 
 

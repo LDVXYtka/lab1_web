@@ -10,7 +10,7 @@ async function loadPerson() {
         document.querySelector("#room").textContent = student.room;
         document.querySelector("#term").textContent = formatDate(student.term);
         document.querySelector("#international").textContent = student.international ? "Да" : "Нет";
-        document.querySelector("#note").textContent = student.note || "Заметок нет.";
+        document.querySelector("#note").textContent = student.note || "Нет заметок";
         document.querySelector("#edit-link").href = "form.html?id=" + student.id;
         document.title = student.name + " - Досье студента";
     } catch (error) {

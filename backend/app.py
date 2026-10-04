@@ -24,12 +24,12 @@ def handle_not_found(error):
 
 @app.errorhandler(405)
 def handle_wrong_method(error):
-    return {"status": 405, "message": "Этот метод не поддерживается по этому адресу", "fields": {}}, 405
+    return {"status": 405, "message": "Этот метод здесь не поддерживается", "fields": {}}, 405
 
 
 @app.errorhandler(500)
 def handle_server_error(error):
-    return {"status": 500, "message": "Ошибка на сервере", "fields": {}}, 500
+    return {"status": 500, "message": "Что-то сломалось на сервере", "fields": {}}, 500
 
 
 if __name__ == "__main__":

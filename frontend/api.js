@@ -20,7 +20,7 @@ async function sendRequest(method, url, data) {
     try {
         response = await fetch(url, options);
     } catch (error) {
-        throw { message: "Сервер недоступен. Проверьте, что он запущен." };
+        throw { message: "Сервер не отвечает" };
     }
 
     if (response.status === 204) {
