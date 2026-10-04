@@ -58,7 +58,7 @@ function renderStudents(students) {
             idToDelete = student.id;
             showMessage("");
             document.querySelector("#delete-question").textContent =
-                "Точно удалить " + student.name + " (ИСУ " + student.isu + ")?";
+                "Удалить студента " + student.name + " (ИСУ " + student.isu + ")?";
             deletePanel.hidden = false;
             document.querySelector("#cancel-delete").focus();
         });

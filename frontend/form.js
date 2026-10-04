@@ -20,37 +20,37 @@ function getFieldError(name) {
     if (name === "name") {
         const namePattern = /^[A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*(?: [A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*)+$/;
         if (value.length > 100) {
-            return "Слишком длинное ФИО, максимум 100 символов";
+            return "ФИО должно содержать не больше 100 символов";
         }
         if (!namePattern.test(value)) {
-            return "Нужны фамилия и имя через пробел, только буквы (дефис и апостроф можно внутри слова)";
+            return "Введите минимум два слова: фамилию и имя. Допустимы русские и латинские буквы, дефисы и апострофы внутри слов";
         }
     }
 
     if (name === "group" && !/^[A-Z][34][1-4][0-9]{2}$/.test(value)) {
-        return "Группа как M3301: большая латинская буква, потом 3 или 4, потом цифра от 1 до 4 и еще две цифры";
+        return "Укажите латинскую букву, затем 3 или 4 и еще три цифры, например M3301";
     }
 
     if (name === "isu" && !/^[1-9][0-9]{5}$/.test(value)) {
-        return "ИСУ: 6 цифр, первая не 0";
+        return "ИСУ должен состоять из шести цифр, первая цифра не 0";
     }
 
     if (name === "dormitory" && !/^[1-8]$/.test(value)) {
-        return "Общежитие: целое число от 1 до 8";
+        return "Введите целый номер общежития от 1 до 8";
     }
 
     if (name === "room" && !/^(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])$/.test(value)) {
-        return "Комната как 1203: этаж от 1 до 20 и номер от 01 до 99";
+        return "Укажите этаж от 1 до 20 и две цифры комнаты от 01 до 99";
     }
 
     if (name === "term") {
         if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) || value < "1970-01-01" || value > lastDate) {
-            return "Дата от 01.01.1970 до " + formatDate(lastDate);
+            return "Дата должна быть от 01.01.1970 до " + formatDate(lastDate);
         }
     }
 
     if (name === "note" && value.length > 2000) {
-        return "Слишком длинные заметки, максимум 2000 символов";
+        return "Заметки должны содержать не больше 2000 символов";
     }
 
     return "";
@@ -74,6 +74,7 @@ function fillForm(student) {
     }
     international.checked = student.international;
     document.querySelector("#form-title").textContent = "Редактирование студента";
+    document.querySelector("#save-button").textContent = "Сохранить изменения";
     document.title = "Редактирование студента";
 }
 

@@ -34,7 +34,7 @@
             </div>
             <div class="form-row">
                 <div class="form-element">
-                    <label for="dormitory">Общежитие*</label>
+                    <label for="dormitory">Номер общежития*</label>
                     <input type="number" id="dormitory" name="dormitory" placeholder="1" min="1" max="8" required>
                     <p id="dormitory-error" class="field-error" hidden></p>
                 </div>
@@ -60,7 +60,7 @@
                 <textarea id="note" name="note" rows="5" maxlength="2000"></textarea>
                 <p id="note-error" class="field-error" hidden></p>
             </div>
-            <button type="submit">Сохранить</button>
+            <button type="submit" id="save-button">Сохранить</button>
         </form>
     </main>
     <script src="api.js"></script>

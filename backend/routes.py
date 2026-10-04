@@ -9,7 +9,7 @@ bp = Blueprint("students", __name__)
 def read_body() -> dict:
     data = request.get_json(silent=True)
     if type(data) is not dict:
-        raise ApiError(400, "В теле запроса нужен JSON-объект")
+        raise ApiError(400, "Тело запроса должно быть JSON-объектом")
     return data
 
 
