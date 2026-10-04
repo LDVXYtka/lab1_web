@@ -1,15 +1,15 @@
-from flask import Flask
+from flask import Flask, redirect
 
 from routes import bp
 from service import ApiError
 
-app = Flask(__name__, static_folder="../frontend", static_url_path="")
+app = Flask(__name__, static_folder="../frontend")
 app.register_blueprint(bp)
 
 
 @app.route("/")
 def index():
-    return app.send_static_file("table.html")
+    return redirect("/frontend/table.html")
 
 
 @app.errorhandler(ApiError)
