@@ -3,6 +3,7 @@
 import json
 import os
 
+# файл лежит рядом с этим .py, так путь не зависит от папки, из которой запустили сервер
 FILE_PATH = os.path.join(os.path.dirname(__file__), "students.json")
 
 

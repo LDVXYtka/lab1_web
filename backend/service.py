@@ -1,6 +1,7 @@
 # Бизнес-логика: проверки, уникальность ИСУ, фильтрация
 
 import re
+import threading
 from datetime import date
 
 import repository
@@ -21,6 +22,10 @@ NAME_PATTERN = r"[A-Za-zА-Яа-яЁё]+(?:[-'][A-Za-zА-Яа-яЁё]+)*(?: [A-Z
 GROUP_PATTERN = r"[A-Z][34][1-4][0-9]{2}"
 ISU_PATTERN = r"[1-9][0-9]{5}"
 ROOM_PATTERN = r"(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])"
+
+# Flask обрабатывает запросы в разных потоках. Изменения делаем по одному,
+# иначе два POST с одинаковым ИСУ могут одновременно пройти проверку
+lock = threading.Lock()
 
 
 def is_date(value: str) -> bool:
@@ -150,35 +155,38 @@ def get_student(student_id: int) -> dict:
 
 def create_student(data: dict) -> dict:
     validate_student(data)
-    check_isu_is_free(data["isu"])
-    student = {
-        "id": repository.next_id(),
-        "name": data["name"],
-        "group": data["group"],
-        "isu": data["isu"],
-        "dormitory": data["dormitory"],
-        "room": data["room"],
-        "term": data["term"],
-        "international": data["international"],
-        "note": data.get("note", ""),
-    }
-    repository.add(student)
+    with lock:
+        check_isu_is_free(data["isu"])
+        student = {
+            "id": repository.next_id(),
+            "name": data["name"],
+            "group": data["group"],
+            "isu": data["isu"],
+            "dormitory": data["dormitory"],
+            "room": data["room"],
+            "term": data["term"],
+            "international": data["international"],
+            "note": data.get("note", ""),
+        }
+        repository.add(student)
     return student
 
 
 def update_student(student_id: int, data: dict) -> dict:
-    student = get_student(student_id)
-    validate_student(data, for_update=True)
-    if "isu" in data and data["isu"] != student["isu"]:
-        check_isu_is_free(data["isu"])
-    updated = student.copy()
-    for field in FIELDS:
-        if field in data:
-            updated[field] = data[field]
-    repository.replace(student_id, updated)
+    with lock:
+        student = get_student(student_id)
+        validate_student(data, for_update=True)
+        if "isu" in data and data["isu"] != student["isu"]:
+            check_isu_is_free(data["isu"])
+        updated = student.copy()
+        for field in FIELDS:
+            if field in data:
+                updated[field] = data[field]
+        repository.replace(student_id, updated)
     return updated
 
 
 def delete_student(student_id: int):
-    get_student(student_id)
-    repository.delete(student_id)
+    with lock:
+        get_student(student_id)
+        repository.delete(student_id)

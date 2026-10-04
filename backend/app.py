@@ -1,22 +1,14 @@
 # Точка входа: создаёт приложение, подключает маршруты, раздаёт страницы и ловит ошибки
 
-import json
-
 from flask import Flask
-from werkzeug.exceptions import HTTPException
 
 from routes import bp
 from service import ApiError
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
+# без этого русские буквы в JSON-ответе приходят кодами вида \u0421\u0442
 app.json.ensure_ascii = False
-app.json.sort_keys = False
 app.register_blueprint(bp)
-
-HTTP_MESSAGES = {
-    404: "Такого адреса нет",
-    405: "Этот метод не поддерживается по этому адресу",
-}
 
 
 @app.route("/")
@@ -29,18 +21,18 @@ def handle_api_error(error):
     return {"status": error.status, "message": error.message, "fields": error.fields}, error.status
 
 
-@app.errorhandler(HTTPException)
-def handle_http_error(error):
-    response = error.get_response()
-    message = HTTP_MESSAGES.get(error.code, error.description)
-    response.data = json.dumps({"status": error.code, "message": message, "fields": {}}, ensure_ascii=False)
-    response.content_type = "application/json"
-    return response
+@app.errorhandler(404)
+def handle_not_found(error):
+    return {"status": 404, "message": "Такого адреса нет", "fields": {}}, 404
 
 
-@app.errorhandler(Exception)
-def handle_other_error(error):
-    app.logger.exception(error)
+@app.errorhandler(405)
+def handle_wrong_method(error):
+    return {"status": 405, "message": "Этот метод не поддерживается по этому адресу", "fields": {}}, 405
+
+
+@app.errorhandler(500)
+def handle_server_error(error):
     return {"status": 500, "message": "Ошибка на сервере", "fields": {}}, 500
 
 

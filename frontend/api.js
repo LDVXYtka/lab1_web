@@ -22,7 +22,7 @@ async function sendRequest(method, url, data) {
     try {
         response = await fetch(url, options);
     } catch (error) {
-        throw new Error("Сервер недоступен. Проверьте, что он запущен.");
+        throw { status: 0, message: "Сервер недоступен. Проверьте, что он запущен.", fields: {} };
     }
 
     if (response.status === 204) {
@@ -31,15 +31,14 @@ async function sendRequest(method, url, data) {
 
     const body = await response.json();
     if (!response.ok) {
-        const error = new Error(body.message);
-        error.status = response.status;
-        error.fields = body.fields;
-        throw error;
+        // ошибка от сервера уже в виде {status, message, fields}
+        throw body;
     }
     return body;
 }
 
 function getStudents(filters) {
+    // если фильтров много, по ТЗ используем QUERY: фильтры уходят в теле запроса
     if (Object.keys(filters).length > 3) {
         return sendRequest("QUERY", "/api/requests", filters);
     }

@@ -3,25 +3,24 @@ const emptyState = document.querySelector("#empty-state");
 const studentCount = document.querySelector("#student-count");
 const deletePanel = document.querySelector("#delete-panel");
 const filtersForm = document.querySelector("#filters");
+const filterNames = ["name", "group", "isu", "dormitory", "room", "term_from", "term_to", "international"];
 let idToDelete = null;
 
 function getFiltersFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const filters = {};
-    for (const [key, value] of params) {
-        if (value.trim() !== "") {
-            filters[key] = value.trim();
+    for (const name of filterNames) {
+        const value = params.get(name);
+        if (value !== null && value.trim() !== "") {
+            filters[name] = value.trim();
         }
     }
     return filters;
 }
 
 function fillFiltersForm(filters) {
-    for (const key in filters) {
-        const field = filtersForm.elements[key];
-        if (field) {
-            field.value = filters[key];
-        }
+    for (const name in filters) {
+        filtersForm.elements[name].value = filters[name];
     }
 }
 
