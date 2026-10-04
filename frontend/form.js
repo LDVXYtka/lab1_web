@@ -28,7 +28,7 @@ function getFieldError(name) {
     }
 
     if (name === "group" && !/^[A-Z][34][1-4][0-9]{2}$/.test(value)) {
-        return "Укажите латинскую букву, затем 3 или 4 и ещё три цифры, например M3301.";
+        return "Укажите латинскую букву, затем 3 или 4 и еще три цифры, например M3301.";
     }
 
     if (name === "isu" && !/^[1-9][0-9]{5}$/.test(value)) {
@@ -84,11 +84,7 @@ async function loadStudent() {
         fillForm(student);
     } catch (error) {
         form.hidden = true;
-        if (error.status === 404) {
-            showMessage("Студент не найден. Вернитесь к списку студентов.", true);
-        } else {
-            showMessage(error.message, true);
-        }
+        showMessage(error.message, true);
     }
 }
 

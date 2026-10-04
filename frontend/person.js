@@ -16,11 +16,7 @@ async function loadPerson() {
     } catch (error) {
         document.querySelector("#student-details").hidden = true;
         document.querySelector("#edit-link").hidden = true;
-        if (error.status === 404) {
-            showMessage("Студент не найден. Вернитесь к списку студентов.", true);
-        } else {
-            showMessage(error.message, true);
-        }
+        showMessage(error.message, true);
     }
 }
 

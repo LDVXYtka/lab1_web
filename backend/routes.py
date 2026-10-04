@@ -1,5 +1,3 @@
-# Маршруты: принимают запрос, передают данные в service.py и возвращают ответ
-
 from flask import Blueprint, request
 
 import service
@@ -32,8 +30,7 @@ def get_student(student_id):
 
 @bp.route("/api/requests", methods=["POST"])
 def create_student():
-    student = service.create_student(read_body())
-    return student, 201, {"Location": "/api/requests/" + str(student["id"])}
+    return service.create_student(read_body()), 201
 
 
 @bp.route("/api/requests/<int:student_id>", methods=["PATCH"])

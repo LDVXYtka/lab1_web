@@ -1,13 +1,9 @@
-# Точка входа: создаёт приложение, подключает маршруты, раздаёт страницы и ловит ошибки
-
 from flask import Flask
 
 from routes import bp
 from service import ApiError
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
-# без этого русские буквы в JSON-ответе приходят кодами вида \u0421\u0442
-app.json.ensure_ascii = False
 app.register_blueprint(bp)
 
 

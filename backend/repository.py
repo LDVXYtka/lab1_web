@@ -1,9 +1,6 @@
-# Работа с данными: студенты лежат в памяти и в файле students.json
-
 import json
 import os
 
-# файл лежит рядом с этим .py, так путь не зависит от папки, из которой запустили сервер
 FILE_PATH = os.path.join(os.path.dirname(__file__), "students.json")
 
 
@@ -26,7 +23,7 @@ def get_all() -> list:
     return students
 
 
-def get_by_id(student_id: int) -> dict | None:
+def get_by_id(student_id: int):
     for student in students:
         if student["id"] == student_id:
             return student

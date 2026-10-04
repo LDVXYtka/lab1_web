@@ -1,5 +1,3 @@
-// Общие функции для всех страниц: запросы к серверу и сообщения
-
 function showMessage(text, isError = false) {
     const message = document.querySelector("#message");
     message.textContent = text;
@@ -22,7 +20,7 @@ async function sendRequest(method, url, data) {
     try {
         response = await fetch(url, options);
     } catch (error) {
-        throw { status: 0, message: "Сервер недоступен. Проверьте, что он запущен.", fields: {} };
+        throw { message: "Сервер недоступен. Проверьте, что он запущен." };
     }
 
     if (response.status === 204) {
@@ -31,14 +29,12 @@ async function sendRequest(method, url, data) {
 
     const body = await response.json();
     if (!response.ok) {
-        // ошибка от сервера уже в виде {status, message, fields}
         throw body;
     }
     return body;
 }
 
 function getStudents(filters) {
-    // если фильтров много, по ТЗ используем QUERY: фильтры уходят в теле запроса
     if (Object.keys(filters).length > 3) {
         return sendRequest("QUERY", "/api/requests", filters);
     }

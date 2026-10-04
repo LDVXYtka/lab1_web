@@ -2,7 +2,6 @@ const tableBody = document.querySelector("#table-body");
 const emptyState = document.querySelector("#empty-state");
 const studentCount = document.querySelector("#student-count");
 const deletePanel = document.querySelector("#delete-panel");
-const filtersForm = document.querySelector("#filters");
 const filterNames = ["name", "group", "isu", "dormitory", "room", "term_from", "term_to", "international"];
 let idToDelete = null;
 
@@ -20,19 +19,14 @@ function getFiltersFromUrl() {
 
 function fillFiltersForm(filters) {
     for (const name in filters) {
-        filtersForm.elements[name].value = filters[name];
+        document.querySelector("#" + name).value = filters[name];
     }
 }
 
-function renderStudents(students, hasFilters) {
+function renderStudents(students) {
     tableBody.replaceChildren();
     studentCount.textContent = "Студентов: " + students.length;
     emptyState.hidden = students.length !== 0;
-    if (hasFilters) {
-        emptyState.textContent = "По этим фильтрам никого не нашлось.";
-    } else {
-        emptyState.textContent = "Студентов пока нет. Добавьте первую запись.";
-    }
 
     for (const student of students) {
         const row = document.createElement("tr");
@@ -76,10 +70,9 @@ function renderStudents(students, hasFilters) {
 }
 
 async function loadStudents() {
-    const filters = getFiltersFromUrl();
     try {
-        const students = await getStudents(filters);
-        renderStudents(students, Object.keys(filters).length > 0);
+        const students = await getStudents(getFiltersFromUrl());
+        renderStudents(students);
     } catch (error) {
         showMessage(error.message, true);
     }
@@ -96,7 +89,7 @@ document.querySelector("#confirm-delete").addEventListener("click", async functi
     }
     try {
         await deleteStudent(idToDelete);
-        showMessage("Студент удалён.");
+        showMessage("Студент удален.");
     } catch (error) {
         showMessage(error.message, true);
     }

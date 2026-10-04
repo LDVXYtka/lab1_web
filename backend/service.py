@@ -1,5 +1,3 @@
-# Бизнес-логика: проверки, уникальность ИСУ, фильтрация
-
 import re
 import threading
 from datetime import date
@@ -8,7 +6,7 @@ import repository
 
 
 class ApiError(Exception):
-    def __init__(self, status: int, message: str, fields: dict | None = None):
+    def __init__(self, status: int, message: str, fields=None):
         super().__init__(message)
         self.status = status
         self.message = message
@@ -23,8 +21,6 @@ GROUP_PATTERN = r"[A-Z][34][1-4][0-9]{2}"
 ISU_PATTERN = r"[1-9][0-9]{5}"
 ROOM_PATTERN = r"(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])"
 
-# Flask обрабатывает запросы в разных потоках. Изменения делаем по одному,
-# иначе два POST с одинаковым ИСУ могут одновременно пройти проверку
 lock = threading.Lock()
 
 
@@ -61,10 +57,10 @@ def check_field(field: str, value) -> str:
             return "Введите минимум фамилию и имя: только буквы, дефис и апостроф внутри слов"
     elif field == "group":
         if not re.fullmatch(GROUP_PATTERN, value):
-            return "Группа: латинская заглавная буква, потом 3 или 4 и ещё три цифры, например M3301"
+            return "Группа: латинская заглавная буква, потом 3 или 4 и еще три цифры, например M3301"
     elif field == "isu":
         if not re.fullmatch(ISU_PATTERN, value):
-            return "ИСУ — 6 цифр, первая не 0"
+            return "ИСУ должен состоять из 6 цифр, первая не 0"
     elif field == "room":
         if not re.fullmatch(ROOM_PATTERN, value):
             return "Комната: этаж от 1 до 20 и номер от 01 до 99, например 1203"
@@ -108,11 +104,11 @@ def check_filters(filters: dict) -> dict:
         if value == "":
             continue
         if key == "dormitory" and not re.fullmatch(r"[1-8]", value):
-            raise ApiError(400, "Фильтр dormitory — число от 1 до 8")
+            raise ApiError(400, "Фильтр dormitory должен быть числом от 1 до 8")
         if key == "international" and value not in ("true", "false"):
-            raise ApiError(400, "Фильтр international — true или false")
+            raise ApiError(400, "Фильтр international должен быть true или false")
         if key in ("term_from", "term_to") and not is_date(value):
-            raise ApiError(400, "Фильтр " + key + " — дата в формате ГГГГ-ММ-ДД")
+            raise ApiError(400, "Фильтр " + key + " должен быть датой в формате ГГГГ-ММ-ДД")
         result[key] = value
     return result
 

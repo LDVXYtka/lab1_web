@@ -15,20 +15,20 @@
         <p id="message" class="message" role="status" aria-live="polite" hidden></p>
         <form id="filters" class="filters" method="get" action="table.html">
             <div class="form-element">
-                <label for="filter-name">ФИО</label>
-                <input type="text" id="filter-name" name="name" placeholder="Часть ФИО">
+                <label for="name">ФИО</label>
+                <input type="text" id="name" name="name" placeholder="Часть ФИО">
             </div>
             <div class="form-element">
-                <label for="filter-group">Группа</label>
-                <input type="text" id="filter-group" name="group" placeholder="M3301" maxlength="5">
+                <label for="group">Группа</label>
+                <input type="text" id="group" name="group" placeholder="M3301" maxlength="5">
             </div>
             <div class="form-element">
-                <label for="filter-isu">ИСУ</label>
-                <input type="text" id="filter-isu" name="isu" placeholder="412345" inputmode="numeric" maxlength="6">
+                <label for="isu">ИСУ</label>
+                <input type="text" id="isu" name="isu" placeholder="412345" inputmode="numeric" maxlength="6">
             </div>
             <div class="form-element">
-                <label for="filter-dormitory">Общежитие</label>
-                <select id="filter-dormitory" name="dormitory">
+                <label for="dormitory">Общежитие</label>
+                <select id="dormitory" name="dormitory">
                     <option value="">Любое</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -41,20 +41,20 @@
                 </select>
             </div>
             <div class="form-element">
-                <label for="filter-room">Комната</label>
-                <input type="text" id="filter-room" name="room" placeholder="1203" inputmode="numeric" maxlength="4">
+                <label for="room">Комната</label>
+                <input type="text" id="room" name="room" placeholder="1203" inputmode="numeric" maxlength="4">
             </div>
             <div class="form-element">
-                <label for="filter-term-from">Заселён с</label>
-                <input type="date" id="filter-term-from" name="term_from">
+                <label for="term_from">Заселен с</label>
+                <input type="date" id="term_from" name="term_from">
             </div>
             <div class="form-element">
-                <label for="filter-term-to">Заселён по</label>
-                <input type="date" id="filter-term-to" name="term_to">
+                <label for="term_to">Заселен по</label>
+                <input type="date" id="term_to" name="term_to">
             </div>
             <div class="form-element">
-                <label for="filter-international">Иностранец</label>
-                <select id="filter-international" name="international">
+                <label for="international">Иностранец</label>
+                <select id="international" name="international">
                     <option value="">Все</option>
                     <option value="true">Да</option>
                     <option value="false">Нет</option>
@@ -93,7 +93,7 @@
                 <tbody id="table-body"></tbody>
             </table>
         </div>
-        <p id="empty-state" hidden></p>
+        <p id="empty-state" hidden>Студенты не найдены.</p>
     </main>
     <script src="api.js"></script>
     <script src="table.js"></script>
