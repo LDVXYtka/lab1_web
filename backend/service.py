@@ -6,7 +6,7 @@ import repository
 
 
 class ApiError(Exception):
-    def __init__(self, status: int, message: str, fields=None):
+    def __init__(self, status, message, fields=None):
         super().__init__(message)
         self.status = status
         self.message = message
@@ -24,7 +24,7 @@ ROOM_PATTERN = r"(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])"
 lock = threading.Lock()
 
 
-def is_date(value: str) -> bool:
+def is_date(value):
     if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
         return False
     try:
@@ -34,7 +34,7 @@ def is_date(value: str) -> bool:
     return True
 
 
-def check_field(field: str, value) -> str:
+def check_field(field, value):
     if field == "dormitory":
         if type(value) is not int:
             return "Номер общежития должен быть числом"
@@ -65,16 +65,15 @@ def check_field(field: str, value) -> str:
         if not re.fullmatch(ROOM_PATTERN, value):
             return "Комната: этаж от 1 до 20 и номер от 01 до 99, например 1203"
     elif field == "term":
-        last_date = str(date.today().year) + "-12-31"
-        if not is_date(value) or value < "1970-01-01" or value > last_date:
-            return "Дата заселения от 1970-01-01 до " + last_date
+        if not is_date(value) or value < "1970-01-01" or value > "2026-12-31":
+            return "Дата заселения от 1970-01-01 до 2026-12-31"
     elif field == "note":
         if len(value) > 2000:
             return "Заметки не длиннее 2000 символов"
     return ""
 
 
-def validate_student(data: dict, for_update: bool = False):
+def validate_student(data, for_update=False):
     errors = {}
     for field in FIELDS:
         if field in data:
@@ -87,13 +86,13 @@ def validate_student(data: dict, for_update: bool = False):
         raise ApiError(422, "Проверьте поля формы", errors)
 
 
-def check_isu_is_free(isu: str):
+def check_isu_is_free(isu):
     for student in repository.get_all():
         if student["isu"] == isu:
             raise ApiError(409, "Студент с таким ИСУ уже есть", {"isu": "Этот ИСУ уже занят другим студентом"})
 
 
-def check_filters(filters: dict) -> dict:
+def check_filters(filters):
     result = {}
     for key, value in filters.items():
         if key not in FILTERS:
@@ -113,7 +112,7 @@ def check_filters(filters: dict) -> dict:
     return result
 
 
-def matches(student: dict, filters: dict) -> bool:
+def matches(student, filters):
     if "name" in filters and filters["name"].lower() not in student["name"].lower():
         return False
     if "group" in filters and filters["group"].upper() != student["group"]:
@@ -133,7 +132,7 @@ def matches(student: dict, filters: dict) -> bool:
     return True
 
 
-def get_students(filters: dict) -> list:
+def get_students(filters):
     filters = check_filters(filters)
     result = []
     for student in repository.get_all():
@@ -142,14 +141,14 @@ def get_students(filters: dict) -> list:
     return result
 
 
-def get_student(student_id: int) -> dict:
+def get_student(student_id):
     student = repository.get_by_id(student_id)
     if student is None:
         raise ApiError(404, "Студент не найден")
     return student
 
 
-def create_student(data: dict) -> dict:
+def create_student(data):
     validate_student(data)
     with lock:
         check_isu_is_free(data["isu"])
@@ -168,7 +167,7 @@ def create_student(data: dict) -> dict:
     return student
 
 
-def update_student(student_id: int, data: dict) -> dict:
+def update_student(student_id, data):
     with lock:
         student = get_student(student_id)
         validate_student(data, for_update=True)
@@ -182,7 +181,7 @@ def update_student(student_id: int, data: dict) -> dict:
     return updated
 
 
-def delete_student(student_id: int):
+def delete_student(student_id):
     with lock:
         get_student(student_id)
         repository.delete(student_id)

@@ -4,7 +4,7 @@ import os
 FILE_PATH = os.path.join(os.path.dirname(__file__), "students.json")
 
 
-def read_file() -> list:
+def read_file():
     if not os.path.exists(FILE_PATH):
         return []
     with open(FILE_PATH, "r", encoding="utf-8") as file:
@@ -19,29 +19,29 @@ def save_file():
 students = read_file()
 
 
-def get_all() -> list:
+def get_all():
     return students
 
 
-def get_by_id(student_id: int):
+def get_by_id(student_id):
     for student in students:
         if student["id"] == student_id:
             return student
     return None
 
 
-def next_id() -> int:
+def next_id():
     if len(students) == 0:
         return 1
     return max(student["id"] for student in students) + 1
 
 
-def add(student: dict):
+def add(student):
     students.append(student)
     save_file()
 
 
-def replace(student_id: int, new_student: dict):
+def replace(student_id, new_student):
     for i in range(len(students)):
         if students[i]["id"] == student_id:
             students[i] = new_student
@@ -49,7 +49,7 @@ def replace(student_id: int, new_student: dict):
             return
 
 
-def delete(student_id: int):
+def delete(student_id):
     for student in students:
         if student["id"] == student_id:
             students.remove(student)
