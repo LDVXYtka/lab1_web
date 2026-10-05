@@ -20,7 +20,7 @@ async function sendRequest(method, url, data) {
     try {
         response = await fetch(url, options);
     } catch (error) {
-        throw { message: "Сервер недоступен. Проверьте, что он запущен" };
+        throw new Error("Сервер недоступен. Проверьте, что он запущен");
     }
 
     if (response.status === 204) {
@@ -29,7 +29,9 @@ async function sendRequest(method, url, data) {
 
     const body = await response.json();
     if (!response.ok) {
-        throw body;
+        const error = new Error(body.message);
+        error.fields = body.fields;
+        throw error;
     }
     return body;
 }

@@ -72,6 +72,9 @@ function renderStudents(students) {
 async function loadStudents() {
     try {
         const students = await getStudents(getFiltersFromUrl());
+        if (!Array.isArray(students)) {
+            throw new Error("Сервер прислал неверные данные");
+        }
         renderStudents(students);
     } catch (error) {
         showMessage(error.message, true);
