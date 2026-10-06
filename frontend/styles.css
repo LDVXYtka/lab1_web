@@ -257,6 +257,10 @@ dd {
     overflow-wrap: anywhere;
 }
 
+section {
+    margin: 0.1 rem;
+}
+
 
 @media (max-width: 900px) {
 
