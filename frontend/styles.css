@@ -46,8 +46,7 @@ main {
     align-items: center;
 }
 
-button,
-.button {
+button {
     display: inline-block;
     font-family: inherit;
     font-size: 0.9rem;
@@ -61,8 +60,7 @@ button,
     cursor: pointer;
 }
 
-button:hover,
-.button:hover {
+button:hover {
     background: #e8e8e8;
 }
 

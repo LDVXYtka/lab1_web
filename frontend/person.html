@@ -10,10 +10,10 @@
 <body>
     <header>
         <h1>Досье студента</h1>
-        <a class="button" href="table.html">Назад к списку</a>
+        <button onclick="window.location.href='table.html'">Назад к списку</button>
     </header>
     <main>
-        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
+        <p id="message" class="message" hidden></p>
 
         <dl id="student-details">
             <div class="wide">
@@ -49,7 +49,7 @@
                 <dd id="note"></dd>
             </div>
         </dl>
-        <a id="edit-link" class="button" href="form.html">Редактировать</a>
+        <button id="edit-button">Редактировать</button>
     </main>
     <script src="api.js"></script>
     <script src="person.js"></script>

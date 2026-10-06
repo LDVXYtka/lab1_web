@@ -41,15 +41,19 @@ function renderStudents(students) {
 
         const actionCell = document.createElement("td");
 
-        const detailsLink = document.createElement("a");
-        detailsLink.className = "button";
-        detailsLink.textContent = "Подробнее";
-        detailsLink.href = "person.html?id=" + student.id;
+        const detailsButton = document.createElement("button");
+        detailsButton.type = "button";
+        detailsButton.textContent = "Подробнее";
+        detailsButton.addEventListener("click", function () {
+            window.location.href = "person.html?id=" + student.id;
+        });
 
-        const editLink = document.createElement("a");
-        editLink.className = "button";
-        editLink.textContent = "Изменить";
-        editLink.href = "form.html?id=" + student.id;
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Изменить";
+        editButton.addEventListener("click", function () {
+            window.location.href = "form.html?id=" + student.id;
+        });
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
@@ -63,7 +67,7 @@ function renderStudents(students) {
             document.querySelector("#cancel-delete").focus();
         });
 
-        actionCell.append(detailsLink, editLink, deleteButton);
+        actionCell.append(detailsButton, editButton, deleteButton);
         row.append(actionCell);
         tableBody.append(row);
     }

@@ -11,11 +11,13 @@ async function loadPerson() {
         document.querySelector("#term").textContent = formatDate(student.term);
         document.querySelector("#international").textContent = student.international ? "Да" : "Нет";
         document.querySelector("#note").textContent = student.note || "Заметок нет";
-        document.querySelector("#edit-link").href = "form.html?id=" + student.id;
+        document.querySelector("#edit-button").addEventListener("click", function () {
+            window.location.href = "form.html?id=" + student.id;
+        });
         document.title = student.name + " - Досье студента";
     } catch (error) {
         document.querySelector("#student-details").hidden = true;
-        document.querySelector("#edit-link").hidden = true;
+        document.querySelector("#edit-button").hidden = true;
         showMessage(error.message, true);
     }
 }

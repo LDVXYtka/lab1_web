@@ -12,8 +12,8 @@
         <h1>Студенты</h1>
     </header>
     <main>
-        <p id="message" class="message" role="status" aria-live="polite" hidden></p>
-        <form id="filters" class="filters" method="get" action="table.html">
+        <p id="message" class="message" hidden></p>
+        <form class="filters" method="get" action="table.html">
             <div class="form-element">
                 <label for="name">ФИО</label>
                 <input type="text" id="name" name="name" placeholder="Часть ФИО">
@@ -62,21 +62,21 @@
             </div>
             <div class="filter-buttons">
                 <button type="submit">Найти</button>
-                <a class="button" href="table.html">Сбросить</a>
+                <button type="button" onclick="window.location.href='table.html'">Сбросить</button>
             </div>
         </form>
         <div class="info-panel">
             <p id="student-count">Студентов: 0</p>
-            <a class="button" href="form.html">Добавить студента</a>
+            <button onclick="window.location.href='form.html'">Добавить студента</button>
         </div>
         <section id="delete-panel" hidden>
             <p id="delete-question"></p>
-            <div class="actions">
-                <button id="confirm-delete" type="button" class="primary">Удалить</button>
+            <div>
+                <button id="confirm-delete" type="button">Удалить</button>
                 <button id="cancel-delete" type="button">Отмена</button>
             </div>
         </section>
-        <div id="table" class="table-scroll">
+        <div class="table-scroll">
             <table>
                 <thead>
                     <tr>
