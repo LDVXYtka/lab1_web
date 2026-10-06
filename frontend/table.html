@@ -69,13 +69,13 @@
             <p id="student-count">Студентов: 0</p>
             <button onclick="window.location.href='form.html'">Добавить студента</button>
         </div>
-        <section id="delete-panel" hidden>
+        <dialog id="delete-dialog">
             <p id="delete-question"></p>
-            <div>
+            <div class="dialog-buttons">
                 <button id="confirm-delete" type="button">Удалить</button>
                 <button id="cancel-delete" type="button">Отмена</button>
             </div>
-        </section>
+        </dialog>
         <div class="table-scroll">
             <table>
                 <thead>

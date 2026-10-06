@@ -1,7 +1,7 @@
 const tableBody = document.querySelector("#table-body");
 const emptyState = document.querySelector("#empty-state");
 const studentCount = document.querySelector("#student-count");
-const deletePanel = document.querySelector("#delete-panel");
+const deleteDialog = document.querySelector("#delete-dialog");
 const filterNames = ["name", "group", "isu", "dormitory", "room", "term_from", "term_to", "international"];
 let idToDelete = null;
 
@@ -63,7 +63,7 @@ function renderStudents(students) {
             showMessage("");
             document.querySelector("#delete-question").textContent =
                 "Удалить студента " + student.name + " (ИСУ " + student.isu + ")?";
-            deletePanel.hidden = false;
+            deleteDialog.showModal();
             document.querySelector("#cancel-delete").focus();
         });
 
@@ -86,7 +86,7 @@ async function loadStudents() {
 }
 
 document.querySelector("#cancel-delete").addEventListener("click", function () {
-    deletePanel.hidden = true;
+    deleteDialog.close();
     idToDelete = null;
 });
 
@@ -100,7 +100,7 @@ document.querySelector("#confirm-delete").addEventListener("click", async functi
     } catch (error) {
         showMessage(error.message, true);
     }
-    deletePanel.hidden = true;
+    deleteDialog.close();
     idToDelete = null;
     loadStudents();
 });

@@ -21,6 +21,13 @@ GROUP_PATTERN = r"[A-Z][34][1-4][0-9]{2}"
 ISU_PATTERN = r"[1-9][0-9]{5}"
 ROOM_PATTERN = r"(?:[1-9]|1[0-9]|20)(?:0[1-9]|[1-9][0-9])"
 
+RULES = {
+    "name": (NAME_PATTERN, "Введите минимум фамилию и имя: только буквы, дефис и апостроф внутри слов"),
+    "group": (GROUP_PATTERN, "Группа: латинская заглавная буква, потом 3 или 4 и еще три цифры, например M3301"),
+    "isu": (ISU_PATTERN, "ИСУ должен состоять из 6 цифр, первая не 0"),
+    "room": (ROOM_PATTERN, "Комната: этаж от 1 до 20 и номер от 01 до 99, например 1203"),
+}
+
 lock = threading.Lock()
 
 
@@ -38,7 +45,7 @@ def check_field(field, value):
     if field == "dormitory":
         if type(value) is not int:
             return "Номер общежития должен быть числом"
-        if value < 1 or value > 8:
+        if not 1 <= value <= 8:
             return "Номер общежития от 1 до 8"
         return ""
 
@@ -49,27 +56,16 @@ def check_field(field, value):
 
     if type(value) is not str:
         return "Значение должно быть строкой"
-
-    if field == "name":
-        if len(value) > 100:
-            return "ФИО должно быть не длиннее 100 символов"
-        if not re.fullmatch(NAME_PATTERN, value):
-            return "Введите минимум фамилию и имя: только буквы, дефис и апостроф внутри слов"
-    elif field == "group":
-        if not re.fullmatch(GROUP_PATTERN, value):
-            return "Группа: латинская заглавная буква, потом 3 или 4 и еще три цифры, например M3301"
-    elif field == "isu":
-        if not re.fullmatch(ISU_PATTERN, value):
-            return "ИСУ должен состоять из 6 цифр, первая не 0"
-    elif field == "room":
-        if not re.fullmatch(ROOM_PATTERN, value):
-            return "Комната: этаж от 1 до 20 и номер от 01 до 99, например 1203"
-    elif field == "term":
-        if not is_date(value) or value < "1970-01-01" or value > "2026-12-31":
-            return "Дата заселения от 1970-01-01 до 2026-12-31"
-    elif field == "note":
-        if len(value) > 2000:
-            return "Заметки не длиннее 2000 символов"
+    if field == "name" and len(value) > 100:
+        return "ФИО должно быть не длиннее 100 символов"
+    if field == "note" and len(value) > 2000:
+        return "Заметки не длиннее 2000 символов"
+    if field == "term" and not (is_date(value) and "1970-01-01" <= value <= "2026-12-31"):
+        return "Дата заселения от 1970-01-01 до 2026-12-31"
+    if field in RULES:
+        pattern, message = RULES[field]
+        if not re.fullmatch(pattern, value):
+            return message
     return ""
 
 
