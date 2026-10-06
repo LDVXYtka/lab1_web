@@ -28,7 +28,7 @@ RULES = {
     "room": (ROOM_PATTERN, "Комната: этаж от 1 до 20 и номер от 01 до 99, например 1203"),
 }
 
-lock = threading.Lock()
+lock = threading.RLock()
 
 
 def is_date(value):
@@ -130,15 +130,18 @@ def matches(student, filters):
 
 def get_students(filters):
     filters = check_filters(filters)
+    with lock:
+        students = repository.get_all()
     result = []
-    for student in repository.get_all():
+    for student in students:
         if matches(student, filters):
             result.append(student)
     return result
 
 
 def get_student(student_id):
-    student = repository.get_by_id(student_id)
+    with lock:
+        student = repository.get_by_id(student_id)
     if student is None:
         raise ApiError(404, "Студент не найден")
     return student
