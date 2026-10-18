@@ -1,0 +1,22 @@
+meta {
+  name: Текущий пользователь
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{userAccess}}
+}
+
+tests {
+  test("200, это тот, кто вошел", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.body.username).to.equal(bru.getVar("userUsername"));
+  });
+}

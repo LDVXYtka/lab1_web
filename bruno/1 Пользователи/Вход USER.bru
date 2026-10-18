@@ -1,0 +1,31 @@
+meta {
+  name: Вход USER
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{userUsername}}",
+    "password": "{{userPassword}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("userAccess", res.body.accessToken);
+  bru.setVar("userRefresh", res.body.refreshToken);
+}
+
+tests {
+  test("200 и два токена", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.body.accessToken).to.be.a("string");
+    expect(res.body.refreshToken).to.be.a("string");
+  });
+}

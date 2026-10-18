@@ -1,0 +1,33 @@
+meta {
+  name: Обновление токена
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{userRefresh}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("oldUserRefresh", bru.getVar("userRefresh"));
+}
+
+script:post-response {
+  bru.setVar("userAccess", res.body.accessToken);
+  bru.setVar("userRefresh", res.body.refreshToken);
+}
+
+tests {
+  test("200 и новая пара токенов", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.body.refreshToken).to.not.equal(bru.getVar("oldUserRefresh"));
+  });
+}

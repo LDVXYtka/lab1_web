@@ -1,0 +1,21 @@
+meta {
+  name: Удаленный не найден
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/requests/{{studentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccess}}
+}
+
+tests {
+  test("404", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

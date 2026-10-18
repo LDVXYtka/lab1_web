@@ -1,0 +1,43 @@
+meta {
+  name: Создать
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/requests
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccess}}
+}
+
+body:json {
+  {
+    "name": "Тестов Тест Тестович",
+    "group": "P3220",
+    "isu": "{{newIsu}}",
+    "dormitory": 3,
+    "room": "1203",
+    "term": "2026-09-01",
+    "international": false,
+    "note": "Создан из Bruno"
+  }
+}
+
+script:pre-request {
+  bru.setVar("newIsu", String(100000 + Math.floor(Math.random() * 900000)));
+}
+
+script:post-response {
+  bru.setVar("studentId", res.body.id);
+}
+
+tests {
+  test("201 и выданный сервером id", function () {
+    expect(res.getStatus()).to.equal(201);
+    expect(res.body.id).to.be.a("number");
+  });
+}

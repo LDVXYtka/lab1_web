@@ -1,0 +1,21 @@
+meta {
+  name: USER пытается удалить
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/requests/1
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{userAccess}}
+}
+
+tests {
+  test("403", function () {
+    expect(res.getStatus()).to.equal(403);
+  });
+}

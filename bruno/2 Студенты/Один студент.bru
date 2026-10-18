@@ -1,0 +1,22 @@
+meta {
+  name: Один студент
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/requests/{{studentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccess}}
+}
+
+tests {
+  test("200", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.body.isu).to.equal(bru.getVar("newIsu"));
+  });
+}

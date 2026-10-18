@@ -1,0 +1,33 @@
+meta {
+  name: Создать с ошибками
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/requests
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccess}}
+}
+
+body:json {
+  {
+    "name": "Иван",
+    "group": "x3301",
+    "isu": "012345",
+    "dormitory": 9,
+    "room": "2100",
+    "term": "2026-09-01"
+  }
+}
+
+tests {
+  test("422 и ошибки по полям", function () {
+    expect(res.getStatus()).to.equal(422);
+    expect(res.body.fields).to.include.keys("name", "group", "isu", "dormitory", "room", "international");
+  });
+}

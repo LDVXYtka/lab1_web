@@ -1,0 +1,17 @@
+meta {
+  name: Без токена
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/requests
+  body: none
+  auth: none
+}
+
+tests {
+  test("401", function () {
+    expect(res.getStatus()).to.equal(401);
+  });
+}

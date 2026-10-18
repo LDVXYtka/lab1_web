@@ -1,0 +1,21 @@
+meta {
+  name: Удалить
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/api/requests/{{studentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccess}}
+}
+
+tests {
+  test("204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

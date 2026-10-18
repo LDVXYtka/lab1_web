@@ -1,0 +1,24 @@
+meta {
+  name: Вход с неверным паролем
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{userUsername}}",
+    "password": "wrong-password"
+  }
+}
+
+tests {
+  test("401", function () {
+    expect(res.getStatus()).to.equal(401);
+  });
+}

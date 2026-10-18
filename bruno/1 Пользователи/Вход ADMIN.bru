@@ -1,0 +1,30 @@
+meta {
+  name: Вход ADMIN
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{adminUsername}}",
+    "password": "{{adminPassword}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("adminAccess", res.body.accessToken);
+  bru.setVar("adminRefresh", res.body.refreshToken);
+}
+
+tests {
+  test("200 и два токена", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.body.accessToken).to.be.a("string");
+  });
+}

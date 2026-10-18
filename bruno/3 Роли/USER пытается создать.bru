@@ -1,0 +1,33 @@
+meta {
+  name: USER пытается создать
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/requests
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{userAccess}}
+}
+
+body:json {
+  {
+    "name": "Тестов Тест",
+    "group": "P3220",
+    "isu": "399999",
+    "dormitory": 3,
+    "room": "1203",
+    "term": "2026-09-01",
+    "international": false
+  }
+}
+
+tests {
+  test("403", function () {
+    expect(res.getStatus()).to.equal(403);
+  });
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Повторный refresh старым токеном
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{oldUserRefresh}}"
+  }
+}
+
+tests {
+  test("401, старый refresh уже удален", function () {
+    expect(res.getStatus()).to.equal(401);
+  });
+}
