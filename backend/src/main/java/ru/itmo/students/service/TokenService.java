@@ -14,13 +14,12 @@ import ru.itmo.students.repository.RefreshTokenRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TokenService {
@@ -31,15 +30,11 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokens;
     private final long accessMinutes;
     private final long refreshDays;
-    private final SecureRandom random = new SecureRandom();
 
     public TokenService(JwtEncoder encoder,
                         RefreshTokenRepository refreshTokens,
                         @Value("${jwt.access-minutes}") long accessMinutes,
                         @Value("${jwt.refresh-days}") long refreshDays) {
-        if (accessMinutes <= 0 || refreshDays <= 0) {
-            throw new IllegalStateException("JWT_ACCESS_MINUTES и JWT_REFRESH_DAYS должны быть больше 0");
-        }
         this.encoder = encoder;
         this.refreshTokens = refreshTokens;
         this.accessMinutes = accessMinutes;
@@ -74,9 +69,7 @@ public class TokenService {
     }
 
     private String createRefreshToken(UsersRecord user) {
-        byte[] bytes = new byte[32];
-        random.nextBytes(bytes);
-        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        String token = UUID.randomUUID().toString();
         refreshTokens.insert(user.getId(), hash(token), OffsetDateTime.now().plusDays(refreshDays));
         return token;
     }

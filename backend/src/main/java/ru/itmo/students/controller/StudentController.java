@@ -1,8 +1,6 @@
 package ru.itmo.students.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,13 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.itmo.students.dto.StudentFilter;
 import ru.itmo.students.dto.StudentPage;
 import ru.itmo.students.dto.StudentPatchRequest;
 import ru.itmo.students.dto.StudentRequest;
 import ru.itmo.students.dto.StudentResponse;
 import ru.itmo.students.service.StudentService;
 
-import java.util.Map;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/requests")
@@ -38,20 +37,20 @@ public class StudentController {
 
     @GetMapping
     @Operation(summary = "Список студентов с фильтрами, сортировкой и пагинацией")
-    @Parameter(name = "name", in = ParameterIn.QUERY, description = "Часть ФИО без учета регистра")
-    @Parameter(name = "group", in = ParameterIn.QUERY, description = "Группа, например M3301")
-    @Parameter(name = "isu", in = ParameterIn.QUERY, description = "Номер ИСУ")
-    @Parameter(name = "dormitory", in = ParameterIn.QUERY, description = "Общежитие от 1 до 8")
-    @Parameter(name = "room", in = ParameterIn.QUERY, description = "Комната, например 1203")
-    @Parameter(name = "term_from", in = ParameterIn.QUERY, description = "Заселение не раньше, ГГГГ-ММ-ДД")
-    @Parameter(name = "term_to", in = ParameterIn.QUERY, description = "Заселение не позже, ГГГГ-ММ-ДД")
-    @Parameter(name = "international", in = ParameterIn.QUERY, description = "true или false")
-    @Parameter(name = "page", in = ParameterIn.QUERY, description = "Номер страницы с 1, по умолчанию 1")
-    @Parameter(name = "size", in = ParameterIn.QUERY, description = "Записей на странице от 1 до 100, по умолчанию 10")
-    @Parameter(name = "sort", in = ParameterIn.QUERY, description = "id, name, group, isu, dormitory, room, term или international")
-    @Parameter(name = "order", in = ParameterIn.QUERY, description = "asc или desc")
-    public StudentPage list(@Parameter(hidden = true) @RequestParam Map<String, String> params) {
-        return service.findStudents(params);
+    public StudentPage list(@RequestParam(required = false) String name,
+                            @RequestParam(required = false) String group,
+                            @RequestParam(required = false) String isu,
+                            @RequestParam(required = false) Integer dormitory,
+                            @RequestParam(required = false) String room,
+                            @RequestParam(name = "term_from", required = false) LocalDate termFrom,
+                            @RequestParam(name = "term_to", required = false) LocalDate termTo,
+                            @RequestParam(required = false) Boolean international,
+                            @RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "10") int size,
+                            @RequestParam(defaultValue = "id") String sort,
+                            @RequestParam(defaultValue = "asc") String order) {
+        StudentFilter filter = new StudentFilter(name, group, isu, dormitory, room, termFrom, termTo, international);
+        return service.findStudents(filter, page, size, sort, order);
     }
 
     @GetMapping("/{id}")

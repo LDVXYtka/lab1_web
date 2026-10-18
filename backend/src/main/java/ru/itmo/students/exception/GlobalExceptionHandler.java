@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import tools.jackson.databind.exc.MismatchedInputException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,14 +59,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleUnreadableBody(HttpMessageNotReadableException e) {
-        if (e.getCause() instanceof MismatchedInputException cause
-                && !cause.getPath().isEmpty()
-                && cause.getPath().get(0).getPropertyName() != null) {
-            String field = cause.getPath().get(0).getPropertyName();
-            return error(HttpStatus.UNPROCESSABLE_CONTENT, "Проверьте поля формы",
-                    Map.of(field, "Неверный тип или формат значения"));
-        }
-        return error(HttpStatus.BAD_REQUEST, "Тело запроса должно быть JSON-объектом", Map.of());
+        return error(HttpStatus.BAD_REQUEST, "Тело запроса должно быть JSON-объектом с полями правильного типа", Map.of());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

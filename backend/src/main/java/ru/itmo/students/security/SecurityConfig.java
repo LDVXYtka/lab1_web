@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.itmo.students.exception.ErrorResponse;
 import ru.itmo.students.service.TokenService;
@@ -48,6 +49,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        AuthenticationEntryPoint unauthorized = (request, response, e) ->
+                writeError(response, 401, "Нужен вход: передайте действующий access-токен");
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -59,11 +62,9 @@ public class SecurityConfig {
                         .anyRequest().hasRole("ADMIN"))
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(rolesConverter()))
-                        .authenticationEntryPoint((request, response, e) ->
-                                writeError(response, 401, "Нужен вход: передайте действующий access-токен")))
+                        .authenticationEntryPoint(unauthorized))
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint((request, response, e) ->
-                                writeError(response, 401, "Нужен вход: передайте действующий access-токен"))
+                        .authenticationEntryPoint(unauthorized)
                         .accessDeniedHandler((request, response, e) ->
                                 writeError(response, 403, "Недостаточно прав для этого действия")));
         return http.build();

@@ -1,4 +1,4 @@
-package ru.itmo.students.repository;
+package ru.itmo.students.dto;
 
 import java.time.LocalDate;
 

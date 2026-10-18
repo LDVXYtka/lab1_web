@@ -6,6 +6,7 @@ import org.jooq.Field;
 import org.jooq.SortField;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
+import ru.itmo.students.dto.StudentFilter;
 import ru.itmo.students.jooq.tables.records.StudentsRecord;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class StudentRepository {
                 .where(toCondition(filter))
                 .orderBy(toSortField(sort, order), STUDENTS.ID.asc())
                 .limit(size)
-                .offset((page - 1) * size)
+                .offset((long) (page - 1) * size)
                 .fetch();
     }
 
@@ -72,20 +73,20 @@ public class StudentRepository {
 
     private Condition toCondition(StudentFilter filter) {
         Condition condition = DSL.noCondition();
-        if (filter.name() != null) {
-            condition = condition.and(STUDENTS.NAME.containsIgnoreCase(filter.name()));
+        if (isFilled(filter.name())) {
+            condition = condition.and(STUDENTS.NAME.containsIgnoreCase(filter.name().trim()));
         }
-        if (filter.group() != null) {
-            condition = condition.and(STUDENTS.GROUP_NAME.eq(filter.group()));
+        if (isFilled(filter.group())) {
+            condition = condition.and(STUDENTS.GROUP_NAME.eq(filter.group().trim().toUpperCase()));
         }
-        if (filter.isu() != null) {
-            condition = condition.and(STUDENTS.ISU.eq(filter.isu()));
+        if (isFilled(filter.isu())) {
+            condition = condition.and(STUDENTS.ISU.eq(filter.isu().trim()));
         }
         if (filter.dormitory() != null) {
             condition = condition.and(STUDENTS.DORMITORY.eq(filter.dormitory()));
         }
-        if (filter.room() != null) {
-            condition = condition.and(STUDENTS.ROOM.eq(filter.room()));
+        if (isFilled(filter.room())) {
+            condition = condition.and(STUDENTS.ROOM.eq(filter.room().trim()));
         }
         if (filter.termFrom() != null) {
             condition = condition.and(STUDENTS.TERM.ge(filter.termFrom()));
@@ -97,6 +98,10 @@ public class StudentRepository {
             condition = condition.and(STUDENTS.INTERNATIONAL.eq(filter.international()));
         }
         return condition;
+    }
+
+    private boolean isFilled(String value) {
+        return value != null && !value.isBlank();
     }
 
     private SortField<?> toSortField(String sort, String order) {
