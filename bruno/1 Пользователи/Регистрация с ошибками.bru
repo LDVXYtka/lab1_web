@@ -14,13 +14,14 @@ body:json {
   {
     "username": "a",
     "email": "not-an-email",
-    "password": "short"
+    "password": "short",
+    "role": "BOSS"
   }
 }
 
 tests {
   test("422 и ошибки по полям", function () {
     expect(res.getStatus()).to.equal(422);
-    expect(res.body.fields).to.have.keys("username", "email", "password");
+    expect(res.body.fields).to.have.keys("username", "email", "password", "role");
   });
 }

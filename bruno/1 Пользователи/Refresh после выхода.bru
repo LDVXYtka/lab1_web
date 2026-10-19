@@ -1,0 +1,23 @@
+meta {
+  name: Refresh после выхода
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{userRefresh}}"
+  }
+}
+
+tests {
+  test("401, после выхода refresh не работает", function () {
+    expect(res.getStatus()).to.equal(401);
+  });
+}

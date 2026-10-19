@@ -31,7 +31,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Регистрация, новый пользователь получает роль USER")
+    @Operation(summary = "Регистрация с выбором роли USER или ADMIN")
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
@@ -46,6 +46,13 @@ public class AuthController {
     @Operation(summary = "Новая пара токенов по refresh-токену, старый refresh перестает работать")
     public TokenResponse refresh(@Valid @RequestBody RefreshRequest request) {
         return authService.refresh(request);
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Выход, refresh-токен перестает работать")
+    public void logout(@Valid @RequestBody RefreshRequest request) {
+        authService.logout(request);
     }
 
     @GetMapping("/me")

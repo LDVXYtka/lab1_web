@@ -61,8 +61,8 @@ public class AuthService {
             throw new ConflictException("Пользователь с такими данными уже есть", fields);
         }
         String passwordHash = passwordEncoder.encode(request.password());
-        UsersRecord user = users.insert(request.username(), email, passwordHash, "USER");
-        log.info("Зарегистрирован пользователь {}", user.getUsername());
+        UsersRecord user = users.insert(request.username(), email, passwordHash, request.role());
+        log.info("Зарегистрирован пользователь {} с ролью {}", user.getUsername(), user.getRole());
         return toResponse(user);
     }
 
@@ -88,6 +88,14 @@ public class AuthService {
         UsersRecord user = users.findById(old.getUserId()).orElseThrow();
         log.info("Обновлены токены пользователя {}", user.getUsername());
         return tokens.issue(user);
+    }
+
+    @Transactional
+    public void logout(RefreshRequest request) {
+        refreshTokens.findValid(tokens.hash(request.refreshToken())).ifPresent(token -> {
+            refreshTokens.delete(token.getId());
+            log.info("Выход пользователя с id {}", token.getUserId());
+        });
     }
 
     public UserResponse me(String username) {

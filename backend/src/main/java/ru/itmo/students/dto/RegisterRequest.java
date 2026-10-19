@@ -20,6 +20,10 @@ public record RegisterRequest(
         @Size(min = 8, max = 72, message = "Пароль от 8 до 72 символов")
         @Pattern(regexp = "\\p{Graph}+",
                 message = "Пароль: только латинские буквы, цифры и знаки, без пробелов")
-        String password
+        String password,
+
+        @NotNull(message = "Обязательное поле")
+        @Pattern(regexp = "USER|ADMIN", message = "Роль может быть только USER или ADMIN")
+        String role
 ) {
 }

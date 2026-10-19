@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Вход</h1>
+    </header>
+    <main class="auth-page">
+        <p id="message" class="message" hidden></p>
+        <form id="login-form" novalidate>
+            <div class="form-element">
+                <label for="username">Имя пользователя</label>
+                <input type="text" id="username" name="username" maxlength="32">
+            </div>
+            <div class="form-element">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" maxlength="72">
+            </div>
+            <button type="submit">Войти</button>
+            <p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+        </form>
+    </main>
+    <script src="api.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

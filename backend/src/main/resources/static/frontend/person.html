@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Досье студента</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <script src="guard.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Досье студента</h1>
+        <div class="user-panel">
+            <button onclick="window.location.href='table.html'">Назад к списку</button>
+            <span id="current-user"></span>
+            <button id="logout-button" type="button">Выйти</button>
+        </div>
+    </header>
+    <main>
+        <p id="message" class="message" hidden></p>
+
+        <dl id="student-details">
+            <div class="wide">
+                <dt>ФИО</dt>
+                <dd id="name"></dd>
+            </div>
+            <div>
+                <dt>Группа</dt>
+                <dd id="group"></dd>
+            </div>
+            <div>
+                <dt>ИСУ</dt>
+                <dd id="isu"></dd>
+            </div>
+            <div>
+                <dt>Общежитие</dt>
+                <dd id="dormitory"></dd>
+            </div>
+            <div>
+                <dt>Комната</dt>
+                <dd id="room"></dd>
+            </div>
+            <div>
+                <dt>Дата заселения</dt>
+                <dd id="term"></dd>
+            </div>
+            <div>
+                <dt>Иностранец</dt>
+                <dd id="international"></dd>
+            </div>
+            <div>
+                <dt>Заметки</dt>
+                <dd id="note"></dd>
+            </div>
+        </dl>
+        <button id="edit-button">Редактировать</button>
+    </main>
+    <script src="api.js"></script>
+    <script src="person.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Регистрация</h1>
+    </header>
+    <main class="auth-page">
+        <p id="message" class="message" hidden></p>
+        <form id="register-form" novalidate>
+            <div class="form-element">
+                <label for="username">Имя пользователя*</label>
+                <input type="text" id="username" name="username" placeholder="ivan_ivanov" maxlength="32">
+                <p id="username-error" class="field-error" hidden></p>
+            </div>
+            <div class="form-element">
+                <label for="email">Почта*</label>
+                <input type="email" id="email" name="email" placeholder="ivan@itmo.ru" maxlength="254">
+                <p id="email-error" class="field-error" hidden></p>
+            </div>
+            <div class="form-element">
+                <label for="password">Пароль*</label>
+                <input type="password" id="password" name="password" placeholder="Не меньше 8 символов" maxlength="72">
+                <p id="password-error" class="field-error" hidden></p>
+            </div>
+            <div class="form-element">
+                <label for="password2">Повторите пароль*</label>
+                <input type="password" id="password2" name="password2" maxlength="72">
+                <p id="password2-error" class="field-error" hidden></p>
+            </div>
+            <div class="form-element">
+                <label for="role">Роль*</label>
+                <select id="role" name="role">
+                    <option value="USER">USER (только просмотр студентов)</option>
+                    <option value="ADMIN">ADMIN (просмотр, добавление, изменение и удаление)</option>
+                </select>
+                <p id="role-error" class="field-error" hidden></p>
+            </div>
+            <button type="submit">Зарегистрироваться</button>
+            <p>Уже есть аккаунт? <a href="login.html">Войти</a></p>
+        </form>
+    </main>
+    <script src="api.js"></script>
+    <script src="register.js"></script>
+</body>
+</html>
