@@ -118,6 +118,12 @@ function showUserPanel() {
 }
 
 function getStudents(params) {
+    const filterCount = Object.keys(params).filter(function (name) {
+        return !["page", "size", "sort", "order"].includes(name);
+    }).length;
+    if (filterCount > 3) {
+        return sendRequest("QUERY", "/api/requests", params);
+    }
     return sendRequest("GET", "/api/requests?" + new URLSearchParams(params));
 }
 

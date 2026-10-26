@@ -1,9 +1,12 @@
 package ru.itmo.students.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.students.dto.StudentFilter;
 import ru.itmo.students.dto.StudentPage;
 import ru.itmo.students.dto.StudentPatchRequest;
+import ru.itmo.students.dto.StudentQuery;
 import ru.itmo.students.dto.StudentRequest;
 import ru.itmo.students.dto.StudentResponse;
+import ru.itmo.students.exception.BadRequestException;
 import ru.itmo.students.service.StudentService;
 
 import java.time.LocalDate;
@@ -50,6 +55,25 @@ public class StudentController {
                             @RequestParam(defaultValue = "id") String sort,
                             @RequestParam(defaultValue = "asc") String order) {
         StudentFilter filter = new StudentFilter(name, group, isu, dormitory, room, termFrom, termTo, international);
+        return service.findStudents(filter, page, size, sort, order);
+    }
+
+    @RequestMapping
+    @Hidden
+    public StudentPage query(HttpServletRequest httpRequest, @RequestBody(required = false) StudentQuery query)
+            throws HttpRequestMethodNotSupportedException {
+        if (!httpRequest.getMethod().equals("QUERY")) {
+            throw new HttpRequestMethodNotSupportedException(httpRequest.getMethod());
+        }
+        if (query == null) {
+            throw new BadRequestException("Передайте фильтры в теле запроса");
+        }
+        StudentFilter filter = new StudentFilter(query.name(), query.group(), query.isu(), query.dormitory(),
+                query.room(), query.termFrom(), query.termTo(), query.international());
+        int page = query.page() == null ? 1 : query.page();
+        int size = query.size() == null ? 10 : query.size();
+        String sort = query.sort() == null ? "id" : query.sort();
+        String order = query.order() == null ? "asc" : query.order();
         return service.findStudents(filter, page, size, sort, order);
     }
 
