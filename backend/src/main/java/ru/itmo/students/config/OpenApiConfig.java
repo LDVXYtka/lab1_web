@@ -34,17 +34,24 @@ public class OpenApiConfig {
 
     @Bean
     public OpenApiCustomizer securityRequirements() {
-        return api -> api.getPaths().forEach((path, item) -> item.readOperationsMap().forEach((method, operation) -> {
-            boolean publicAuth = List.of("/api/auth/csrf", "/api/auth/register", "/api/auth/login",
-                    "/api/auth/refresh", "/api/auth/logout").contains(path);
-            SecurityRequirement requirement = new SecurityRequirement();
-            if (!publicAuth) {
-                requirement.addList("accessCookie");
+        return api -> {
+            for (String path : api.getPaths().keySet()) {
+                var item = api.getPaths().get(path);
+                boolean publicAuth = List.of("/api/auth/csrf", "/api/auth/register", "/api/auth/login",
+                        "/api/auth/refresh", "/api/auth/logout").contains(path);
+                for (var entry : item.readOperationsMap().entrySet()) {
+                    var method = entry.getKey();
+                    var operation = entry.getValue();
+                    SecurityRequirement requirement = new SecurityRequirement();
+                    if (!publicAuth) {
+                        requirement.addList("accessCookie");
+                    }
+                    if (List.of("POST", "PUT", "PATCH", "DELETE").contains(method.name())) {
+                        requirement.addList("csrf");
+                    }
+                    operation.setSecurity(requirement.isEmpty() ? List.of() : List.of(requirement));
+                }
             }
-            if (List.of("POST", "PUT", "PATCH", "DELETE").contains(method.name())) {
-                requirement.addList("csrf");
-            }
-            operation.setSecurity(requirement.isEmpty() ? List.of() : List.of(requirement));
-        }));
+        };
     }
 }

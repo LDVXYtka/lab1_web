@@ -20,7 +20,7 @@ export function resetSession() {
 
 async function fetchResponse(url, options) {
   try {
-    return await fetch(url, { credentials: 'same-origin', ...options })
+    return await fetch(url, options)
   } catch (error) {
     if (error.name === 'AbortError' || options.signal?.aborted) {
       throw error

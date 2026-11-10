@@ -102,10 +102,6 @@ public class AuthService {
     public UserResponse me(String username) {
         UsersRecord user = users.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        return toResponse(user);
-    }
-
-    private UserResponse toResponse(UsersRecord user) {
         return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 }

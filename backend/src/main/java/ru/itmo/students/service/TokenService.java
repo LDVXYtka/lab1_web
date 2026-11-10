@@ -42,7 +42,9 @@ public class TokenService {
     }
 
     public TokenResponse issue(UsersRecord user) {
-        return new TokenResponse(createAccessToken(user), createRefreshToken(user));
+        String accessToken = createAccessToken(user);
+        String refreshToken = createRefreshToken(user);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     public String hash(String token) {
