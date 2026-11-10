@@ -1,17 +1,17 @@
 meta {
   name: Создать с ошибками
   type: http
-  seq: 6
+  seq: 8
 }
 
 post {
   url: {{baseUrl}}/api/requests
   body: json
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{adminAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 body:json {

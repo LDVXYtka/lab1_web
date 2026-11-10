@@ -7,11 +7,11 @@ meta {
 post {
   url: {{baseUrl}}/api/requests
   body: json
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{userAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 body:json {

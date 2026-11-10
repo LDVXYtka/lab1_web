@@ -26,16 +26,17 @@ public class RefreshTokenRepository {
                 .execute();
     }
 
-    public Optional<RefreshTokensRecord> findValid(String tokenHash) {
-        return dsl.selectFrom(REFRESH_TOKENS)
+    public Optional<RefreshTokensRecord> consume(String tokenHash) {
+        return dsl.deleteFrom(REFRESH_TOKENS)
                 .where(REFRESH_TOKENS.TOKEN_HASH.eq(tokenHash))
                 .and(REFRESH_TOKENS.EXPIRES_AT.gt(OffsetDateTime.now()))
+                .returning()
                 .fetchOptional();
     }
 
-    public void delete(long id) {
+    public void deleteByHash(String tokenHash) {
         dsl.deleteFrom(REFRESH_TOKENS)
-                .where(REFRESH_TOKENS.ID.eq(id))
+                .where(REFRESH_TOKENS.TOKEN_HASH.eq(tokenHash))
                 .execute();
     }
 }

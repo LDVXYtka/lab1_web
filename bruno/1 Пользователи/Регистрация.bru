@@ -10,12 +10,15 @@ post {
   auth: none
 }
 
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
 body:json {
   {
     "username": "{{userUsername}}",
     "email": "{{userUsername}}@itmo.ru",
-    "password": "{{userPassword}}",
-    "role": "USER"
+    "password": "{{userPassword}}"
   }
 }
 
@@ -24,8 +27,7 @@ script:pre-request {
 }
 
 tests {
-  test("201, роль USER", function () {
+  test("201 без тела", function () {
     expect(res.getStatus()).to.equal(201);
-    expect(res.body.role).to.equal("USER");
   });
 }

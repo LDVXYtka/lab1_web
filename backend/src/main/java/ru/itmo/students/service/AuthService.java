@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.students.dto.LoginRequest;
-import ru.itmo.students.dto.RefreshRequest;
 import ru.itmo.students.dto.RegisterRequest;
 import ru.itmo.students.dto.TokenResponse;
 import ru.itmo.students.dto.UserResponse;
@@ -22,6 +21,7 @@ import ru.itmo.students.repository.RefreshTokenRepository;
 import ru.itmo.students.repository.UserRepository;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -48,8 +48,8 @@ public class AuthService {
     }
 
     @Transactional
-    public UserResponse register(RegisterRequest request) {
-        String email = request.email().toLowerCase();
+    public void register(RegisterRequest request) {
+        String email = request.email().toLowerCase(Locale.ROOT);
         Map<String, String> fields = new LinkedHashMap<>();
         if (users.existsByUsername(request.username())) {
             fields.put("username", "Это имя пользователя уже занято");
@@ -61,9 +61,8 @@ public class AuthService {
             throw new ConflictException("Пользователь с такими данными уже есть", fields);
         }
         String passwordHash = passwordEncoder.encode(request.password());
-        UsersRecord user = users.insert(request.username(), email, passwordHash, request.role());
+        UsersRecord user = users.insert(request.username(), email, passwordHash, "USER");
         log.info("Зарегистрирован пользователь {} с ролью {}", user.getUsername(), user.getRole());
-        return toResponse(user);
     }
 
     @Transactional
@@ -81,21 +80,23 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse refresh(RefreshRequest request) {
-        RefreshTokensRecord old = refreshTokens.findValid(tokens.hash(request.refreshToken()))
+    public TokenResponse refresh(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new UnauthorizedException("Нужен refresh-токен");
+        }
+        RefreshTokensRecord old = refreshTokens.consume(tokens.hash(refreshToken))
                 .orElseThrow(() -> new UnauthorizedException("Refresh-токен недействителен или истек"));
-        refreshTokens.delete(old.getId());
         UsersRecord user = users.findById(old.getUserId()).orElseThrow();
         log.info("Обновлены токены пользователя {}", user.getUsername());
         return tokens.issue(user);
     }
 
     @Transactional
-    public void logout(RefreshRequest request) {
-        refreshTokens.findValid(tokens.hash(request.refreshToken())).ifPresent(token -> {
-            refreshTokens.delete(token.getId());
-            log.info("Выход пользователя с id {}", token.getUserId());
-        });
+    public void logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+        refreshTokens.deleteByHash(tokens.hash(refreshToken));
     }
 
     public UserResponse me(String username) {

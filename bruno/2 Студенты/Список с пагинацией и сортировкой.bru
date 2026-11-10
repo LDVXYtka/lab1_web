@@ -7,7 +7,7 @@ meta {
 get {
   url: {{baseUrl}}/api/requests?page=1&size=5&sort=name&order=asc
   body: none
-  auth: bearer
+  auth: none
 }
 
 params:query {
@@ -15,10 +15,6 @@ params:query {
   size: 5
   sort: name
   order: asc
-}
-
-auth:bearer {
-  token: {{adminAccess}}
 }
 
 tests {

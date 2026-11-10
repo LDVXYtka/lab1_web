@@ -1,17 +1,17 @@
 meta {
   name: Частично изменить PATCH
   type: http
-  seq: 9
+  seq: 11
 }
 
 patch {
   url: {{baseUrl}}/api/requests/{{studentId}}
   body: json
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{adminAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 body:json {

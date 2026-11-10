@@ -37,8 +37,11 @@ public class AdminInitializer implements ApplicationRunner {
         if (users.existsByUsername(username)) {
             return;
         }
-        if (password.length() < 8) {
-            throw new IllegalStateException("ADMIN_PASSWORD должен быть не короче 8 символов");
+        if (!username.matches("[A-Za-z0-9_]{3,32}")) {
+            throw new IllegalStateException("ADMIN_USERNAME: от 3 до 32 латинских букв, цифр или знаков _");
+        }
+        if (password.length() < 8 || password.length() > 72 || !password.matches("\\p{Graph}+")) {
+            throw new IllegalStateException("ADMIN_PASSWORD: от 8 до 72 латинских букв, цифр или знаков без пробелов");
         }
         users.insert(username, email, passwordEncoder.encode(password), "ADMIN");
         log.info("Создан администратор {}", username);

@@ -10,6 +10,10 @@ post {
   auth: none
 }
 
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
 body:json {
   {
     "username": "{{adminUsername}}",
@@ -17,14 +21,9 @@ body:json {
   }
 }
 
-script:post-response {
-  bru.setVar("adminAccess", res.body.accessToken);
-  bru.setVar("adminRefresh", res.body.refreshToken);
-}
-
 tests {
-  test("200 и два токена", function () {
-    expect(res.getStatus()).to.equal(200);
-    expect(res.body.accessToken).to.be.a("string");
+  test("HTTP 204", function () {
+    expect(res.getStatus()).to.equal(204);
+    expect(res.getHeader("set-cookie").join(";")).to.include("HttpOnly");
   });
 }

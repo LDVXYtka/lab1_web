@@ -6,18 +6,22 @@ meta {
 
 post {
   url: {{baseUrl}}/api/auth/logout
-  body: json
+  body: none
   auth: none
 }
 
-body:json {
-  {
-    "refreshToken": "{{userRefresh}}"
-  }
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
+script:pre-request {
+  const cookies = await bru.cookies.jar().getCookies(bru.getEnvVar("baseUrl") + "/api/auth");
+  bru.setVar("loggedOutRefresh", cookies.find(cookie => cookie.key === "refreshToken").value);
 }
 
 tests {
-  test("204", function () {
+  test("HTTP 204", function () {
     expect(res.getStatus()).to.equal(204);
+    expect(res.getHeader("set-cookie").join(";")).to.include("Max-Age=0");
   });
 }

@@ -10,12 +10,15 @@ post {
   auth: none
 }
 
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
 body:json {
   {
     "username": "{{userUsername}}",
     "email": "{{userUsername}}@itmo.ru",
-    "password": "{{userPassword}}",
-    "role": "USER"
+    "password": "{{userPassword}}"
   }
 }
 

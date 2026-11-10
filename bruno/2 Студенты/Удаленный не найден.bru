@@ -1,17 +1,13 @@
 meta {
   name: Удаленный не найден
   type: http
-  seq: 11
+  seq: 13
 }
 
 get {
   url: {{baseUrl}}/api/requests/{{studentId}}
   body: none
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{adminAccess}}
+  auth: none
 }
 
 tests {

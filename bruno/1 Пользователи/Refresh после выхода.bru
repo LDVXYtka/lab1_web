@@ -6,18 +6,30 @@ meta {
 
 post {
   url: {{baseUrl}}/api/auth/refresh
-  body: json
+  body: none
   auth: none
 }
 
-body:json {
-  {
-    "refreshToken": "{{userRefresh}}"
-  }
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
+script:pre-request {
+  await bru.cookies.jar().setCookie(bru.getEnvVar("baseUrl"), {
+    key: "refreshToken",
+    value: bru.getVar("loggedOutRefresh"),
+    path: "/api/auth",
+    httpOnly: true,
+    sameSite: "lax"
+  });
+}
+
+script:post-response {
+  await bru.cookies.jar().deleteCookie(bru.getEnvVar("baseUrl") + "/api/auth", "refreshToken");
 }
 
 tests {
-  test("401, после выхода refresh не работает", function () {
+  test("HTTP 401", function () {
     expect(res.getStatus()).to.equal(401);
   });
 }

@@ -1,0 +1,29 @@
+meta {
+  name: Вход ADMIN для очистки
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
+body:json {
+  {
+    "username": "{{adminUsername}}",
+    "password": "{{adminPassword}}"
+  }
+}
+
+tests {
+  test("HTTP 204", function () {
+    expect(res.getStatus()).to.equal(204);
+    expect(res.getHeader("set-cookie").join(";")).to.include("HttpOnly");
+  });
+}

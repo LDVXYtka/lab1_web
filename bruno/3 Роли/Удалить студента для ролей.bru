@@ -1,0 +1,21 @@
+meta {
+  name: Удалить студента для ролей
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/requests/{{roleStudentId}}
+  body: none
+  auth: none
+}
+
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
+tests {
+  test("204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

@@ -10,11 +10,20 @@ post {
   auth: none
 }
 
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
 body:json {
   {
     "username": "{{userUsername}}",
-    "password": "wrong-password"
+    "password": "{{wrongPassword}}"
   }
+}
+
+script:pre-request {
+  const password = bru.getEnvVar("userPassword");
+  bru.setVar("wrongPassword", password.startsWith("a") ? "bbbbbbbb" : "aaaaaaaa");
 }
 
 tests {

@@ -1,12 +1,15 @@
 package ru.itmo.students.security;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,8 +23,16 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import ru.itmo.students.exception.ErrorResponse;
@@ -40,12 +51,15 @@ public class SecurityConfig {
 
     private final JsonMapper jsonMapper;
     private final SecretKey secretKey;
+    private final boolean cookieSecure;
 
-    public SecurityConfig(JsonMapper jsonMapper, @Value("${jwt.secret}") String secret) {
+    public SecurityConfig(JsonMapper jsonMapper, @Value("${jwt.secret}") String secret,
+                          @Value("${cookie.secure}") boolean cookieSecure) {
         this.jsonMapper = jsonMapper;
+        this.cookieSecure = cookieSecure;
         byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
         if (bytes.length < 32) {
-            throw new IllegalStateException("JWT_SECRET должен быть не короче 32 символов");
+            throw new IllegalStateException("JWT_SECRET должен быть не короче 32 байт в UTF-8");
         }
         this.secretKey = new SecretKeySpec(bytes, "HmacSHA256");
     }
@@ -53,26 +67,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthenticationEntryPoint unauthorized = (request, response, e) ->
-                writeError(response, 401, "Нужен вход: передайте действующий access-токен");
+                writeError(response, 401, "Нужно войти в аккаунт");
+        CookieCsrfTokenRepository csrfTokens = new CookieCsrfTokenRepository();
+        csrfTokens.setCookieCustomizer(cookie -> cookie.httpOnly(true).sameSite("Lax").secure(cookieSecure));
+        JwtAuthenticationProvider jwtProvider = new JwtAuthenticationProvider(jwtDecoder());
+        jwtProvider.setJwtAuthenticationConverter(rolesConverter());
+        BearerTokenAuthenticationConverter tokenConverter = new BearerTokenAuthenticationConverter();
+        tokenConverter.setBearerTokenResolver(this::accessToken);
+        BearerTokenAuthenticationFilter jwtFilter =
+                new BearerTokenAuthenticationFilter(new ProviderManager(jwtProvider), tokenConverter);
+        jwtFilter.setAuthenticationEntryPoint(unauthorized);
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.csrfTokenRepository(csrfTokens)
+                        .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login",
                                 "/api/auth/refresh", "/api/auth/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/frontend/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/requests/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.valueOf("QUERY"), "/api/requests").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .anyRequest().hasRole("ADMIN"))
-                .oauth2ResourceServer(resourceServer -> resourceServer
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(rolesConverter()))
-                        .authenticationEntryPoint(unauthorized))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(unauthorized)
                         .accessDeniedHandler((request, response, e) ->
-                                writeError(response, 403, "Недостаточно прав для этого действия")));
+                                writeError(response, 403, e instanceof CsrfException
+                                        ? "Неверный CSRF-токен, обновите страницу"
+                                        : "Недостаточно прав для этого действия")));
         return http.build();
     }
 
@@ -114,6 +140,26 @@ public class SecurityConfig {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(authorities);
         return converter;
+    }
+
+    private String accessToken(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        if (!path.startsWith("/api/") || List.of("/api/auth/csrf", "/api/auth/login", "/api/auth/register",
+                "/api/auth/refresh", "/api/auth/logout").contains(path)) {
+            return null;
+        }
+        String bearerToken = new DefaultBearerTokenResolver().resolve(request);
+        if (bearerToken != null) {
+            return bearerToken;
+        }
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("accessToken")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     private void writeError(HttpServletResponse response, int status, String message) throws IOException {

@@ -5,13 +5,13 @@ meta {
 }
 
 delete {
-  url: {{baseUrl}}/api/requests/1
+  url: {{baseUrl}}/api/requests/{{roleStudentId}}
   body: none
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{userAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 tests {

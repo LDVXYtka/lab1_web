@@ -3,6 +3,7 @@ package ru.itmo.students.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.students.dto.StudentFilter;
 import ru.itmo.students.dto.StudentPage;
@@ -27,7 +28,7 @@ public class StudentService {
     private static final Logger log = LoggerFactory.getLogger(StudentService.class);
 
     private static final List<String> SORT_FIELDS = List.of(
-            "id", "name", "group", "isu", "dormitory", "room", "term", "international");
+            "id", "name", "group", "isu", "dormitory", "room", "term", "international", "note");
     private static final LocalDate MIN_TERM = LocalDate.of(1970, 1, 1);
 
     private final StudentRepository repository;
@@ -36,6 +37,7 @@ public class StudentService {
         this.repository = repository;
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public StudentPage findStudents(StudentFilter filter, int page, int size, String sort, String order) {
         if (page < 1) {
             throw new BadRequestException("Параметр page должен быть не меньше 1");
@@ -48,6 +50,15 @@ public class StudentService {
         }
         if (!order.equals("asc") && !order.equals("desc")) {
             throw new BadRequestException("Параметр order должен быть asc или desc");
+        }
+        if (filter.id() != null && filter.id() < 1) {
+            throw new BadRequestException("ID должен быть положительным числом");
+        }
+        if (filter.dormitory() != null && (filter.dormitory() < 1 || filter.dormitory() > 8)) {
+            throw new BadRequestException("Номер общежития должен быть от 1 до 8");
+        }
+        if (filter.termFrom() != null && filter.termTo() != null && filter.termFrom().isAfter(filter.termTo())) {
+            throw new BadRequestException("Начало периода должно быть не позже конца");
         }
 
         List<StudentResponse> items = new ArrayList<>();
@@ -84,6 +95,9 @@ public class StudentService {
         StudentsRecord student = new StudentsRecord();
         fill(student, request);
         StudentsRecord saved = repository.update(id, student);
+        if (saved == null) {
+            throw new NotFoundException("Студент не найден");
+        }
         log.info("Полностью изменен студент id={}", id);
         return toResponse(saved);
     }
@@ -91,38 +105,41 @@ public class StudentService {
     @Transactional
     public StudentResponse updateStudent(long id, StudentPatchRequest request) {
         StudentsRecord student = getExisting(id);
-        if (request.name() != null) {
-            student.setName(request.name());
+        if (request.name != null) {
+            student.setName(request.name);
         }
-        if (request.group() != null) {
-            student.setGroupName(request.group());
+        if (request.group != null) {
+            student.setGroupName(request.group);
         }
-        if (request.isu() != null) {
-            if (repository.existsByIsuAndIdNot(request.isu(), id)) {
+        if (request.isu != null) {
+            if (repository.existsByIsuAndIdNot(request.isu, id)) {
                 throw isuTaken();
             }
-            student.setIsu(request.isu());
+            student.setIsu(request.isu);
         }
-        if (request.dormitory() != null) {
-            student.setDormitory(request.dormitory());
+        if (request.dormitory != null) {
+            student.setDormitory(request.dormitory);
         }
-        if (request.room() != null) {
-            student.setRoom(request.room());
+        if (request.room != null) {
+            student.setRoom(request.room);
         }
-        if (request.term() != null) {
-            checkTerm(request.term());
-            student.setTerm(request.term());
+        if (request.term != null) {
+            checkTerm(request.term);
+            student.setTerm(request.term);
         }
-        if (request.international() != null) {
-            student.setInternational(request.international());
+        if (request.international != null) {
+            student.setInternational(request.international);
         }
-        if (request.note() != null) {
-            student.setNote(request.note());
+        if (request.note != null) {
+            student.setNote(request.note);
         }
         if (!student.touched()) {
             return toResponse(student);
         }
         StudentsRecord saved = repository.update(id, student);
+        if (saved == null) {
+            throw new NotFoundException("Студент не найден");
+        }
         log.info("Частично изменен студент id={}", id);
         return toResponse(saved);
     }

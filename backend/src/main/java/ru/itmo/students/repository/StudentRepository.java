@@ -10,6 +10,7 @@ import ru.itmo.students.dto.StudentFilter;
 import ru.itmo.students.jooq.tables.records.StudentsRecord;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static ru.itmo.students.jooq.Tables.STUDENTS;
@@ -73,11 +74,14 @@ public class StudentRepository {
 
     private Condition toCondition(StudentFilter filter) {
         Condition condition = DSL.noCondition();
+        if (filter.id() != null) {
+            condition = condition.and(STUDENTS.ID.eq(filter.id()));
+        }
         if (isFilled(filter.name())) {
             condition = condition.and(STUDENTS.NAME.containsIgnoreCase(filter.name().trim()));
         }
         if (isFilled(filter.group())) {
-            condition = condition.and(STUDENTS.GROUP_NAME.eq(filter.group().trim().toUpperCase()));
+            condition = condition.and(STUDENTS.GROUP_NAME.eq(filter.group().trim().toUpperCase(Locale.ROOT)));
         }
         if (isFilled(filter.isu())) {
             condition = condition.and(STUDENTS.ISU.eq(filter.isu().trim()));
@@ -97,6 +101,9 @@ public class StudentRepository {
         if (filter.international() != null) {
             condition = condition.and(STUDENTS.INTERNATIONAL.eq(filter.international()));
         }
+        if (isFilled(filter.note())) {
+            condition = condition.and(STUDENTS.NOTE.containsIgnoreCase(filter.note().trim()));
+        }
         return condition;
     }
 
@@ -113,6 +120,7 @@ public class StudentRepository {
             case "room" -> STUDENTS.ROOM;
             case "term" -> STUDENTS.TERM;
             case "international" -> STUDENTS.INTERNATIONAL;
+            case "note" -> STUDENTS.NOTE;
             default -> STUDENTS.ID;
         };
         if (order.equals("desc")) {

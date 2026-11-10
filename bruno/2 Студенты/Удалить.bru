@@ -1,17 +1,17 @@
 meta {
   name: Удалить
   type: http
-  seq: 10
+  seq: 12
 }
 
 delete {
   url: {{baseUrl}}/api/requests/{{studentId}}
   body: none
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{adminAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 tests {

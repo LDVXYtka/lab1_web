@@ -1,0 +1,43 @@
+meta {
+  name: Создать студента для ролей
+  type: http
+  seq: -1
+}
+
+post {
+  url: {{baseUrl}}/api/requests
+  body: json
+  auth: none
+}
+
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
+body:json {
+  {
+    "name": "Тестов Тест",
+    "group": "P3220",
+    "isu": "{{roleIsu}}",
+    "dormitory": 3,
+    "room": "1203",
+    "term": "2026-09-01",
+    "international": false,
+    "note": "Проверка ролей Bruno"
+  }
+}
+
+script:pre-request {
+  bru.setVar("roleIsu", String(100000 + Math.floor(Math.random() * 900000)));
+}
+
+script:post-response {
+  bru.setVar("roleStudentId", res.body.id);
+}
+
+tests {
+  test("201 и выданный сервером id", function () {
+    expect(res.getStatus()).to.equal(201);
+    expect(res.body.id).to.be.a("number");
+  });
+}

@@ -6,18 +6,38 @@ meta {
 
 post {
   url: {{baseUrl}}/api/auth/refresh
-  body: json
+  body: none
   auth: none
 }
 
-body:json {
-  {
-    "refreshToken": "{{oldUserRefresh}}"
-  }
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
+}
+
+script:pre-request {
+  const jar = bru.cookies.jar();
+  await jar.setCookie(bru.getEnvVar("baseUrl"), {
+    key: "refreshToken",
+    value: bru.getVar("oldUserRefresh"),
+    path: "/api/auth",
+    httpOnly: true,
+    sameSite: "lax"
+  });
+}
+
+script:post-response {
+  const jar = bru.cookies.jar();
+  await jar.setCookie(bru.getEnvVar("baseUrl"), {
+    key: "refreshToken",
+    value: bru.getVar("newUserRefresh"),
+    path: "/api/auth",
+    httpOnly: true,
+    sameSite: "lax"
+  });
 }
 
 tests {
-  test("401, старый refresh уже удален", function () {
+  test("HTTP 401", function () {
     expect(res.getStatus()).to.equal(401);
   });
 }

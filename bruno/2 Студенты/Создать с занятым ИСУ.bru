@@ -1,17 +1,17 @@
 meta {
   name: Создать с занятым ИСУ
   type: http
-  seq: 7
+  seq: 9
 }
 
 post {
   url: {{baseUrl}}/api/requests
   body: json
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{adminAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 body:json {

@@ -6,28 +6,29 @@ meta {
 
 post {
   url: {{baseUrl}}/api/auth/refresh
-  body: json
+  body: none
   auth: none
 }
 
-body:json {
-  {
-    "refreshToken": "{{userRefresh}}"
-  }
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 script:pre-request {
-  bru.setVar("oldUserRefresh", bru.getVar("userRefresh"));
+  const jar = bru.cookies.jar();
+  const cookie = await jar.getCookie(bru.getEnvVar("baseUrl") + "/api/auth", "refreshToken");
+  bru.setVar("oldUserRefresh", cookie.value);
 }
 
 script:post-response {
-  bru.setVar("userAccess", res.body.accessToken);
-  bru.setVar("userRefresh", res.body.refreshToken);
+  const cookies = res.getHeader("set-cookie");
+  const refresh = cookies.find(value => value.startsWith("refreshToken="));
+  bru.setVar("newUserRefresh", refresh.split(";")[0].slice("refreshToken=".length));
 }
 
 tests {
-  test("200 и новая пара токенов", function () {
-    expect(res.getStatus()).to.equal(200);
-    expect(res.body.refreshToken).to.not.equal(bru.getVar("oldUserRefresh"));
+  test("HTTP 204", function () {
+    expect(res.getStatus()).to.equal(204);
+    expect(bru.getVar("newUserRefresh")).to.not.equal(bru.getVar("oldUserRefresh"));
   });
 }

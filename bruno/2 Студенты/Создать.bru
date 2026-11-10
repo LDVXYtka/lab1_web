@@ -7,16 +7,16 @@ meta {
 post {
   url: {{baseUrl}}/api/requests
   body: json
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: {{adminAccess}}
+headers {
+  X-XSRF-TOKEN: {{csrfToken}}
 }
 
 body:json {
   {
-    "name": "Тестов Тест Тестович",
+    "name": "Тестов Тест",
     "group": "P3220",
     "isu": "{{newIsu}}",
     "dormitory": 3,
