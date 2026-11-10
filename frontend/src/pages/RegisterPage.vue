@@ -1,11 +1,10 @@
 <script setup>
 import { onUnmounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { registerUser } from '../session'
 import { validateRegister } from '../validation'
 import MessageBox from '../components/MessageBox.vue'
 
-const auth = useAuthStore()
 const router = useRouter()
 const form = reactive({ username: '', email: '', password: '' })
 const busy = ref(false)
@@ -22,7 +21,7 @@ async function submit() {
   if (Object.keys(fields.value).length > 0) return
   busy.value = true
   try {
-    await auth.register({ username: form.username.trim(), email: form.email.trim(), password: form.password })
+    await registerUser({ username: form.username.trim(), email: form.email.trim(), password: form.password })
     if (active) await router.push({ path: '/login', query: { registered: '1' } })
   } catch (failure) {
     error.value = failure.message
@@ -61,3 +60,16 @@ async function submit() {
     <p>Уже есть аккаунт? <RouterLink to="/login">Войти</RouterLink></p>
   </section>
 </template>
+
+<style scoped>
+.auth-page {
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.hint {
+  margin: 0.3rem 0 0;
+  color: #606060;
+  font-size: 0.9rem;
+}
+</style>

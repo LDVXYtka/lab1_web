@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { deleteStudent } from '../api'
 import { createStudentSearch } from '../studentSearch'
+import { watchStudents } from '../studentEvents'
 import MessageBox from '../components/MessageBox.vue'
 import StudentFilters from '../components/StudentFilters.vue'
 import StudentTable from '../components/StudentTable.vue'
@@ -20,20 +21,21 @@ const search = createStudentSearch()
 const controller = new AbortController()
 const pageCount = computed(() => Math.max(1, Math.ceil(total.value / Number(filters.value.size))))
 let subscription
+let stopEvents
 
-function load() {
+function load(delay = 0) {
   const params = { page: page.value }
   for (const [name, value] of Object.entries(filters.value)) {
     const text = String(value).trim()
     if (text !== '') params[name] = text
   }
-  search.changes.next(params)
+  search.changes.next({ params, delay })
 }
 
 function changeFilters(values) {
   filters.value = values
   page.value = 1
-  load()
+  load(3000)
 }
 
 function changePage(value) {
@@ -73,12 +75,15 @@ onMounted(() => {
     }
   })
   load()
+  stopEvents = watchStudents(() => search.refresh.next())
 })
 
 onUnmounted(() => {
   controller.abort()
   subscription.unsubscribe()
   search.changes.complete()
+  search.refresh.complete()
+  stopEvents()
 })
 </script>
 
@@ -102,3 +107,22 @@ onUnmounted(() => {
     </div>
   </section>
 </template>
+
+<style scoped>
+.info-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+</style>

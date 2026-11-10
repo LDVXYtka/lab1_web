@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { loadUser } from '../session'
 import MessageBox from '../components/MessageBox.vue'
 
 const auth = useAuthStore()
@@ -14,7 +15,7 @@ onUnmounted(() => { active = false })
 
 onMounted(async () => {
   try {
-    await auth.loadUser(true)
+    await loadUser(true)
     if (active && !auth.user) await router.replace('/login')
   } catch (failure) {
     error.value = failure.message
@@ -37,3 +38,36 @@ onMounted(async () => {
     <RouterLink to="/" class="button">Назад к списку</RouterLink>
   </section>
 </template>
+
+<style scoped>
+.profile-page {
+  max-width: 65rem;
+  margin: 0 auto;
+}
+
+dl {
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 0.2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+dt {
+  margin-bottom: 0.3rem;
+  color: #606060;
+}
+
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>

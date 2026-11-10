@@ -103,25 +103,23 @@ async function refreshSession() {
 
 export async function request(method, url, data, options = {}) {
   const version = sessionVersion
-  let response = await send(method, url, data, options.signal)
-  if (response.status === 401 && options.auth !== false && version === sessionVersion && !loggingOut) {
-    try {
+  try {
+    let response = await send(method, url, data, options.signal)
+    if (response.status === 401 && options.auth !== false && version === sessionVersion && !loggingOut) {
       await refreshSession()
       options.signal?.throwIfAborted()
-      if (version !== sessionVersion || loggingOut) return readResponse(response)
-      response = await send(method, url, data, options.signal)
-    } catch (error) {
-      options.signal?.throwIfAborted()
-      if (error.status === 401 && options.notifyExpired !== false && version === sessionVersion && !loggingOut) {
-        sessionExpired()
+      if (version === sessionVersion && !loggingOut) {
+        response = await send(method, url, data, options.signal)
       }
-      throw error
     }
+    return await readResponse(response)
+  } catch (error) {
+    options.signal?.throwIfAborted()
+    if (error.status === 401 && options.auth !== false && options.notifyExpired !== false && version === sessionVersion && !loggingOut) {
+      sessionExpired()
+    }
+    throw error
   }
-  if (response.status === 401 && options.auth !== false && options.notifyExpired !== false && version === sessionVersion && !loggingOut) {
-    sessionExpired()
-  }
-  return readResponse(response)
 }
 
 export async function logoutSession() {

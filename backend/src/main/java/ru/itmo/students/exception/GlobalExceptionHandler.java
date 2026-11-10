@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -86,6 +87,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateKeyException e) {
         log.warn("Нарушена уникальность в БД: {}", e.getMessage());
         return error(HttpStatus.CONFLICT, "Запись с такими данными уже есть", Map.of());
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleDisconnectedClient() {
     }
 
     @ExceptionHandler(Exception.class)

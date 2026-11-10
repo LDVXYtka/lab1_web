@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { getStudent, deleteStudent } from '../api'
+import { watchStudents } from '../studentEvents'
 import MessageBox from '../components/MessageBox.vue'
 
 const route = useRoute()
@@ -13,18 +14,40 @@ const loading = ref(true)
 const deleting = ref(false)
 const error = ref('')
 const controller = new AbortController()
+let loadController
+let stopEvents
 
-onMounted(async () => {
+async function load() {
+  loadController?.abort()
+  const current = new AbortController()
+  loadController = current
+  loading.value = true
+  error.value = ''
   try {
-    student.value = await getStudent(route.params.id, controller.signal)
+    const data = await getStudent(route.params.id, current.signal)
+    if (!current.signal.aborted) student.value = data
   } catch (failure) {
-    if (!controller.signal.aborted) error.value = failure.message
+    if (!current.signal.aborted) {
+      error.value = failure.message
+      if (failure.status === 404) student.value = null
+    }
   } finally {
-    loading.value = false
+    if (!current.signal.aborted) loading.value = false
   }
+}
+
+onMounted(() => {
+  load()
+  stopEvents = watchStudents(id => {
+    if (id === undefined || id === Number(route.params.id)) load()
+  })
 })
 
-onUnmounted(() => controller.abort())
+onUnmounted(() => {
+  controller.abort()
+  loadController?.abort()
+  stopEvents()
+})
 
 async function remove() {
   if (deleting.value || !window.confirm('Удалить студента ' + student.value.name + '?')) return
@@ -65,3 +88,46 @@ async function remove() {
     </template>
   </section>
 </template>
+
+<style scoped>
+dl {
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 0.2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+dt {
+  margin-bottom: 0.3rem;
+  color: #606060;
+}
+
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.notes {
+  white-space: pre-wrap;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>

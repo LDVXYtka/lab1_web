@@ -17,7 +17,7 @@ function reset() {
 </script>
 
 <template>
-  <form class="filters" @submit.prevent="emit('change', { ...filters })">
+  <form class="filters" @submit.prevent>
     <div class="form-element">
       <label for="filter-name">Поиск по ФИО</label>
       <input id="filter-name" v-model="filters.name" type="search" placeholder="Часть ФИО" maxlength="100">
@@ -95,8 +95,33 @@ function reset() {
       </select>
     </div>
     <div class="filter-buttons">
-      <button type="submit">Найти</button>
       <button type="button" @click="reset">Сбросить</button>
     </div>
   </form>
 </template>
+
+<style scoped>
+.filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.filter-buttons {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>

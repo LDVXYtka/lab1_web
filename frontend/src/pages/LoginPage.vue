@@ -2,6 +2,7 @@
 import { onUnmounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { loginUser } from '../session'
 import { validateLogin } from '../validation'
 import MessageBox from '../components/MessageBox.vue'
 
@@ -24,7 +25,7 @@ async function submit() {
   if (Object.keys(fields.value).length > 0) return
   busy.value = true
   try {
-    await auth.login(form.username.trim(), form.password)
+    await loginUser(form.username.trim(), form.password)
     if (active) await router.replace('/')
   } catch (failure) {
     error.value = failure.message
@@ -58,3 +59,10 @@ async function submit() {
     <p>Нет аккаунта? <RouterLink to="/register">Зарегистрироваться</RouterLink></p>
   </section>
 </template>
+
+<style scoped>
+.auth-page {
+  max-width: 30rem;
+  margin: 0 auto;
+}
+</style>

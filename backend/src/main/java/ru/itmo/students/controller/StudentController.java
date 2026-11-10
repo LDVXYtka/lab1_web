@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import ru.itmo.students.dto.StudentFilter;
 import ru.itmo.students.dto.StudentPage;
 import ru.itmo.students.dto.StudentPatchRequest;
@@ -25,6 +27,7 @@ import ru.itmo.students.dto.StudentQuery;
 import ru.itmo.students.dto.StudentRequest;
 import ru.itmo.students.dto.StudentResponse;
 import ru.itmo.students.exception.BadRequestException;
+import ru.itmo.students.service.StudentEvents;
 import ru.itmo.students.service.StudentService;
 
 import java.time.LocalDate;
@@ -40,9 +43,17 @@ public class StudentController {
             "page", "size", "sort", "order");
 
     private final StudentService service;
+    private final StudentEvents events;
 
-    public StudentController(StudentService service) {
+    public StudentController(StudentService service, StudentEvents events) {
         this.service = service;
+        this.events = events;
+    }
+
+    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(summary = "Уведомления об изменениях студентов")
+    public SseEmitter events() {
+        return events.subscribe();
     }
 
     @GetMapping

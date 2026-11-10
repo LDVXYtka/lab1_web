@@ -1,4 +1,4 @@
-import { Observable, Subject, timer, switchMap, map, catchError, of, startWith } from 'rxjs'
+import { Observable, Subject, timer, switchMap, map, catchError, of, merge, startWith } from 'rxjs'
 import { getStudents } from './api'
 
 function loadStudents(params) {
@@ -20,13 +20,18 @@ function loadStudents(params) {
 
 export function createStudentSearch() {
   const changes = new Subject()
+  const refresh = new Subject()
   const results = changes.pipe(
-    switchMap(params => timer(300).pipe(
-      switchMap(() => loadStudents(params)),
-      map(data => ({ data, loading: false, error: '' })),
-      catchError(error => of({ data: null, loading: false, error: error.message })),
+    switchMap(({ params, delay = 0 }) => timer(delay).pipe(
+      switchMap(() => merge(of(null), refresh).pipe(
+        switchMap(() => loadStudents(params).pipe(
+          map(data => ({ data, loading: false, error: '' })),
+          catchError(error => of({ data: null, loading: false, error: error.message })),
+          startWith({ data: null, loading: true, error: '' })
+        ))
+      )),
       startWith({ data: null, loading: true, error: '' })
     ))
   )
-  return { changes, results }
+  return { changes, refresh, results }
 }

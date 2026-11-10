@@ -41,3 +41,64 @@ function formatDate(date) {
     </table>
   </div>
 </template>
+
+<style scoped>
+.table-scroll {
+  width: 100%;
+  max-height: 65vh;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ccc;
+}
+
+th,
+td {
+  padding: 0.7rem;
+  border-right: 1px solid #d7d7d7;
+  border-bottom: 1px solid #d7d7d7;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: #e5e5e5;
+  white-space: nowrap;
+}
+
+th:first-child,
+td:first-child {
+  min-width: 15rem;
+  max-width: 22rem;
+  overflow-wrap: anywhere;
+}
+
+th:last-child,
+td:last-child {
+  border-right: 0;
+  min-width: 13rem;
+}
+
+tbody tr:nth-child(even) {
+  background: #eaeaea;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+td.actions {
+  display: table-cell;
+}
+
+td.actions .button,
+td.actions button {
+  margin: 0 0.3rem 0.3rem 0;
+}
+</style>

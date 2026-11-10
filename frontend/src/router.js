@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import { loadUser } from './session'
 import StudentsPage from './pages/StudentsPage.vue'
 import StudentPage from './pages/StudentPage.vue'
 import StudentEditPage from './pages/StudentEditPage.vue'
@@ -25,7 +26,7 @@ const router = createRouter({
 router.beforeEach(async to => {
   const auth = useAuthStore()
   try {
-    await auth.loadUser()
+    await loadUser()
   } catch (error) {
     auth.error = error.message
     if (to.meta.auth) {

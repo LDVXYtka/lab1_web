@@ -110,3 +110,16 @@ function submit(event) {
     </fieldset>
   </form>
 </template>
+
+<style scoped>
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+</style>

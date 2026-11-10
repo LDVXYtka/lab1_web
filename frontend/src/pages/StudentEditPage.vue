@@ -54,3 +54,10 @@ async function save(value) {
     <StudentForm v-else-if="!route.params.id || student" :student="student" :busy="busy" :backend-fields="fields" @save="save" />
   </section>
 </template>
+
+<style scoped>
+.form-page {
+  max-width: 65rem;
+  margin: 0 auto;
+}
+</style>
