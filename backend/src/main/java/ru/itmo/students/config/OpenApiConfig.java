@@ -19,7 +19,7 @@ public class OpenApiConfig {
         SecurityScheme accessCookie = new SecurityScheme()
                 .type(SecurityScheme.Type.APIKEY)
                 .in(SecurityScheme.In.COOKIE)
-                .name("accessToken")
+                .name("lab5AccessToken")
                 .description("Cookie устанавливается после входа");
         SecurityScheme csrf = new SecurityScheme()
                 .type(SecurityScheme.Type.APIKEY)
@@ -27,7 +27,7 @@ public class OpenApiConfig {
                 .name("X-XSRF-TOKEN")
                 .description("Значение token из GET /api/auth/csrf для запросов, меняющих данные");
         return new OpenAPI()
-                .info(new Info().title("Students API").version("4.0"))
+                .info(new Info().title("Students API").version("5.0"))
                 .components(new Components().addSecuritySchemes("accessCookie", accessCookie)
                         .addSecuritySchemes("csrf", csrf));
     }

@@ -16,7 +16,7 @@ headers {
 
 script:pre-request {
   const cookies = await bru.cookies.jar().getCookies(bru.getEnvVar("baseUrl") + "/api/auth");
-  bru.setVar("loggedOutRefresh", cookies.find(cookie => cookie.key === "refreshToken").value);
+  bru.setVar("loggedOutRefresh", cookies.find(cookie => cookie.key === "lab5RefreshToken").value);
 }
 
 tests {

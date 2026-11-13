@@ -1,9 +1,11 @@
+name: web-lab5
+
 services:
   db:
     image: postgres:18-alpine
     environment:
-      POSTGRES_DB: ${DB_NAME:-lab4}
-      POSTGRES_USER: ${DB_USER:-lab4}
+      POSTGRES_DB: ${DB_NAME:-lab5}
+      POSTGRES_USER: ${DB_USER:-lab5}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Заполните DB_PASSWORD в .env}
     volumes:
       - postgres_data:/var/lib/postgresql
@@ -16,8 +18,8 @@ services:
   backend:
     build: ./backend
     environment:
-      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-lab4}
-      DB_USER: ${DB_USER:-lab4}
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-lab5}
+      DB_USER: ${DB_USER:-lab5}
       DB_PASSWORD: ${DB_PASSWORD:?Заполните DB_PASSWORD в .env}
       JWT_SECRET: ${JWT_SECRET:?Заполните JWT_SECRET в .env}
       JWT_ACCESS_MINUTES: ${JWT_ACCESS_MINUTES:-15}
@@ -39,10 +41,25 @@ services:
 
   frontend:
     build: ./frontend
-    ports:
-      - "${HTTP_PORT:-8080}:80"
+    environment:
+      NUXT_BACKEND_URL: http://backend:8080
     depends_on:
       backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "${HTTP_PORT:-8085}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      frontend:
         condition: service_healthy
 
 volumes:

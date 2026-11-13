@@ -69,6 +69,7 @@ public class SecurityConfig {
         AuthenticationEntryPoint unauthorized = (request, response, e) ->
                 writeError(response, 401, "Нужно войти в аккаунт");
         CookieCsrfTokenRepository csrfTokens = new CookieCsrfTokenRepository();
+        csrfTokens.setCookieName("lab5CsrfToken");
         csrfTokens.setCookieCustomizer(cookie -> cookie.httpOnly(true).sameSite("Lax").secure(cookieSecure));
         JwtAuthenticationProvider jwtProvider = new JwtAuthenticationProvider(jwtDecoder());
         jwtProvider.setJwtAuthenticationConverter(rolesConverter());
@@ -82,7 +83,7 @@ public class SecurityConfig {
                         .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login",
+                        .requestMatchers(HttpMethod.POST, "/api/auth/csrf", "/api/auth/register", "/api/auth/login",
                                 "/api/auth/refresh", "/api/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
@@ -154,7 +155,7 @@ public class SecurityConfig {
         }
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("accessToken")) {
+                if (cookie.getName().equals("lab5AccessToken")) {
                     return cookie.getValue();
                 }
             }

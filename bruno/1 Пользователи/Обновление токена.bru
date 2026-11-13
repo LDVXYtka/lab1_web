@@ -16,14 +16,14 @@ headers {
 
 script:pre-request {
   const jar = bru.cookies.jar();
-  const cookie = await jar.getCookie(bru.getEnvVar("baseUrl") + "/api/auth", "refreshToken");
+  const cookie = await jar.getCookie(bru.getEnvVar("baseUrl") + "/api/auth", "lab5RefreshToken");
   bru.setVar("oldUserRefresh", cookie.value);
 }
 
 script:post-response {
   const cookies = res.getHeader("set-cookie");
-  const refresh = cookies.find(value => value.startsWith("refreshToken="));
-  bru.setVar("newUserRefresh", refresh.split(";")[0].slice("refreshToken=".length));
+  const refresh = cookies.find(value => value.startsWith("lab5RefreshToken="));
+  bru.setVar("newUserRefresh", refresh.split(";")[0].slice("lab5RefreshToken=".length));
 }
 
 tests {

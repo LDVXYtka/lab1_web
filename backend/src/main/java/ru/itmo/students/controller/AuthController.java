@@ -51,6 +51,12 @@ public class AuthController {
         return csrfToken;
     }
 
+    @PostMapping("/csrf")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Проверка CSRF перед объединением параллельных запросов")
+    public void checkCsrf() {
+    }
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Регистрация пользователя с ролью USER")
@@ -66,17 +72,17 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Новая пара токенов по refresh-токену, старый refresh перестает работать")
-    public ResponseEntity<Void> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+    public ResponseEntity<Void> refresh(@CookieValue(name = "lab5RefreshToken", required = false) String refreshToken) {
         return tokenCookies(authService.refresh(refreshToken));
     }
 
     @PostMapping("/logout")
     @Operation(summary = "Выход, refresh-токен перестает работать")
-    public ResponseEntity<Void> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+    public ResponseEntity<Void> logout(@CookieValue(name = "lab5RefreshToken", required = false) String refreshToken) {
         authService.logout(refreshToken);
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, cookie("accessToken", "", "/", Duration.ZERO).toString())
-                .header(HttpHeaders.SET_COOKIE, cookie("refreshToken", "", "/api/auth", Duration.ZERO).toString())
+                .header(HttpHeaders.SET_COOKIE, cookie("lab5AccessToken", "", "/", Duration.ZERO).toString())
+                .header(HttpHeaders.SET_COOKIE, cookie("lab5RefreshToken", "", "/", Duration.ZERO).toString())
                 .build();
     }
 
@@ -89,9 +95,9 @@ public class AuthController {
     private ResponseEntity<Void> tokenCookies(TokenResponse tokens) {
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE,
-                        cookie("accessToken", tokens.accessToken(), "/", Duration.ofMinutes(accessMinutes)).toString())
+                        cookie("lab5AccessToken", tokens.accessToken(), "/", Duration.ofMinutes(accessMinutes)).toString())
                 .header(HttpHeaders.SET_COOKIE,
-                        cookie("refreshToken", tokens.refreshToken(), "/api/auth", Duration.ofDays(refreshDays)).toString())
+                        cookie("lab5RefreshToken", tokens.refreshToken(), "/", Duration.ofDays(refreshDays)).toString())
                 .build();
     }
 

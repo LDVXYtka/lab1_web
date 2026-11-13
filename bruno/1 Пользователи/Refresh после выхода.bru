@@ -16,16 +16,16 @@ headers {
 
 script:pre-request {
   await bru.cookies.jar().setCookie(bru.getEnvVar("baseUrl"), {
-    key: "refreshToken",
+    key: "lab5RefreshToken",
     value: bru.getVar("loggedOutRefresh"),
-    path: "/api/auth",
+    path: "/",
     httpOnly: true,
     sameSite: "lax"
   });
 }
 
 script:post-response {
-  await bru.cookies.jar().deleteCookie(bru.getEnvVar("baseUrl") + "/api/auth", "refreshToken");
+  await bru.cookies.jar().deleteCookie(bru.getEnvVar("baseUrl") + "/api/auth", "lab5RefreshToken");
 }
 
 tests {

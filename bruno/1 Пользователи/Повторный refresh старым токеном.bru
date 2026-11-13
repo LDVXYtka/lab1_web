@@ -17,9 +17,9 @@ headers {
 script:pre-request {
   const jar = bru.cookies.jar();
   await jar.setCookie(bru.getEnvVar("baseUrl"), {
-    key: "refreshToken",
+    key: "lab5RefreshToken",
     value: bru.getVar("oldUserRefresh"),
-    path: "/api/auth",
+    path: "/",
     httpOnly: true,
     sameSite: "lax"
   });
@@ -28,9 +28,9 @@ script:pre-request {
 script:post-response {
   const jar = bru.cookies.jar();
   await jar.setCookie(bru.getEnvVar("baseUrl"), {
-    key: "refreshToken",
+    key: "lab5RefreshToken",
     value: bru.getVar("newUserRefresh"),
-    path: "/api/auth",
+    path: "/",
     httpOnly: true,
     sameSite: "lax"
   });
